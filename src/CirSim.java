@@ -2,26 +2,54 @@
 
 // For information about the theory behind this, see Electronic Circuit & System Simulation Methods by Pillage
 
-import java.io.InputStream;
-import java.awt.*;
-import java.awt.image.*;
-import java.applet.Applet;
-import java.util.Vector;
-import java.io.File;
-import java.util.Random;
-import java.util.Arrays;
-import java.lang.Math;
-import java.net.URL;
-import java.awt.event.*;
-import java.io.FilterInputStream;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.CheckboxMenuItem;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Event;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Label;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.MenuShortcut;
+import java.awt.Point;
+import java.awt.PopupMenu;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Scrollbar;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.ByteArrayOutputStream;
-import java.util.StringTokenizer;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.io.File;
+import java.io.FilterInputStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Random;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 public class CirSim extends Frame implements ComponentListener, ActionListener, AdjustmentListener, MouseMotionListener,
 		MouseListener, ItemListener, KeyListener {
@@ -174,8 +202,6 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 	public void init() {
 		String euroResistor = null;
 		String useFrameStr = null;
-		boolean printable = false;
-		boolean convention = true;
 
 		CircuitElm.initClass(this);
 
@@ -204,18 +230,12 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 				pause = Integer.parseInt(param);
 			startCircuit = applet.getParameter("startCircuit");
 			startLabel = applet.getParameter("startLabel");
-			euroResistor = applet.getParameter("euroResistors");
+
 			useFrameStr = applet.getParameter("useFrame");
-			String x = applet.getParameter("whiteBackground");
-			if (x != null && x.equalsIgnoreCase("true"))
-				printable = true;
-			x = applet.getParameter("conventionalCurrent");
-			if (x != null && x.equalsIgnoreCase("true"))
-				convention = false;
+
 		} catch (Exception e) {
 		}
 
-		boolean euro = (euroResistor != null && euroResistor.equalsIgnoreCase("true"));
 		useFrame = (useFrameStr == null || !useFrameStr.equalsIgnoreCase("false"));
 		if (useFrame)
 			main = this;
@@ -251,6 +271,125 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		cv.addMouseListener(this);
 		cv.addKeyListener(this);
 		main.add(cv);
+
+		setupMenus();
+
+		main.add(resetButton = new Button("Reset"));
+		resetButton.addActionListener(this);
+		dumpMatrixButton = new Button("Dump Matrix");
+		// main.add(dumpMatrixButton);
+		dumpMatrixButton.addActionListener(this);
+		stoppedCheck = new Checkbox("Stopped");
+		stoppedCheck.addItemListener(this);
+		main.add(stoppedCheck);
+
+		main.add(new Label("Simulation Speed", Label.CENTER));
+
+		// was max of 140
+		main.add(speedBar = new Scrollbar(Scrollbar.HORIZONTAL, 3, 1, 0, 260));
+		speedBar.addAdjustmentListener(this);
+
+		main.add(new Label("Current Speed", Label.CENTER));
+		currentBar = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 1, 100);
+		currentBar.addAdjustmentListener(this);
+		main.add(currentBar);
+
+		main.add(powerLabel = new Label("Power Brightness", Label.CENTER));
+		main.add(powerBar = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 1, 100));
+		powerBar.addAdjustmentListener(this);
+		powerBar.disable();
+		powerLabel.disable();
+
+		main.add(new Label("www.falstad.com"));
+
+		if (useFrame)
+			main.add(new Label(""));
+		Font f = new Font("SansSerif", 0, 10);
+		Label l;
+		l = new Label("Current Circuit:");
+		l.setFont(f);
+		titleLabel = new Label("Label");
+		titleLabel.setFont(f);
+		if (useFrame) {
+			main.add(l);
+			main.add(titleLabel);
+		}
+
+		setGrid();
+		elmList = new Vector<CircuitElm>();
+		// setupList = new Vector();
+		undoStack = new Vector<String>();
+		redoStack = new Vector<String>();
+
+		scopes = new Scope[20];
+		scopeColCount = new int[20];
+		scopeCount = 0;
+
+		random = new Random();
+		cv.setBackground(Color.black);
+		cv.setForeground(Color.lightGray);
+
+		elmMenu = new PopupMenu();
+		elmMenu.add(elmEditMenuItem = getMenuItem("Edit"));
+		elmMenu.add(elmScopeMenuItem = getMenuItem("View in Scope"));
+		elmMenu.add(elmCutMenuItem = getMenuItem("Cut"));
+		elmMenu.add(elmCopyMenuItem = getMenuItem("Copy"));
+		elmMenu.add(elmDeleteMenuItem = getMenuItem("Delete"));
+		main.add(elmMenu);
+
+		scopeMenu = buildScopeMenu(false);
+		transScopeMenu = buildScopeMenu(true);
+
+		if (startCircuitText != null)
+			readSetup(startCircuitText);
+		else if (stopMessage == null && startCircuit != null)
+			readSetupFile(startCircuit, startLabel);
+		else
+			readSetup(null, 0, false);
+
+		if (useFrame) {
+			Dimension screen = getToolkit().getScreenSize();
+			resize(860, 640);
+			handleResize();
+			Dimension x = getSize();
+			setLocation((screen.width - x.width) / 2, (screen.height - x.height) / 2);
+			show();
+		} else {
+			if (!powerCheckItem.getState()) {
+				main.remove(powerBar);
+				main.remove(powerLabel);
+				main.validate();
+			}
+			hide();
+			handleResize();
+			applet.validate();
+		}
+		requestFocus();
+
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent we) {
+				destroyFrame();
+			}
+		});
+	}
+
+	private void setupMenus() {
+
+		String euroResistor = applet.getParameter("euroResistors");
+		boolean euro = (euroResistor != null && euroResistor.equalsIgnoreCase("true"));
+
+		boolean convention = true;
+		String x = applet.getParameter("conventionalCurrent");
+		if (x != null && x.equalsIgnoreCase("true")) {
+			convention = false;
+		}
+
+		boolean printable = false;
+
+		x = applet.getParameter("whiteBackground");
+		if (x != null && x.equalsIgnoreCase("true")) {
+			printable = true;
+		}
 
 		mainMenu = new PopupMenu();
 		MenuBar mb = null;
@@ -446,106 +585,11 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		mainMenu.add(getCheckItem("Select/Drag Selected (space or Shift-drag)", "Select"));
 		main.add(mainMenu);
 
-		main.add(resetButton = new Button("Reset"));
-		resetButton.addActionListener(this);
-		dumpMatrixButton = new Button("Dump Matrix");
-		// main.add(dumpMatrixButton);
-		dumpMatrixButton.addActionListener(this);
-		stoppedCheck = new Checkbox("Stopped");
-		stoppedCheck.addItemListener(this);
-		main.add(stoppedCheck);
-
-		main.add(new Label("Simulation Speed", Label.CENTER));
-
-		// was max of 140
-		main.add(speedBar = new Scrollbar(Scrollbar.HORIZONTAL, 3, 1, 0, 260));
-		speedBar.addAdjustmentListener(this);
-
-		main.add(new Label("Current Speed", Label.CENTER));
-		currentBar = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 1, 100);
-		currentBar.addAdjustmentListener(this);
-		main.add(currentBar);
-
-		main.add(powerLabel = new Label("Power Brightness", Label.CENTER));
-		main.add(powerBar = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 1, 100));
-		powerBar.addAdjustmentListener(this);
-		powerBar.disable();
-		powerLabel.disable();
-
-		main.add(new Label("www.falstad.com"));
-
-		if (useFrame)
-			main.add(new Label(""));
-		Font f = new Font("SansSerif", 0, 10);
-		Label l;
-		l = new Label("Current Circuit:");
-		l.setFont(f);
-		titleLabel = new Label("Label");
-		titleLabel.setFont(f);
-		if (useFrame) {
-			main.add(l);
-			main.add(titleLabel);
-		}
-
-		setGrid();
-		elmList = new Vector<CircuitElm>();
-		// setupList = new Vector();
-		undoStack = new Vector<String>();
-		redoStack = new Vector<String>();
-
-		scopes = new Scope[20];
-		scopeColCount = new int[20];
-		scopeCount = 0;
-
-		random = new Random();
-		cv.setBackground(Color.black);
-		cv.setForeground(Color.lightGray);
-
-		elmMenu = new PopupMenu();
-		elmMenu.add(elmEditMenuItem = getMenuItem("Edit"));
-		elmMenu.add(elmScopeMenuItem = getMenuItem("View in Scope"));
-		elmMenu.add(elmCutMenuItem = getMenuItem("Cut"));
-		elmMenu.add(elmCopyMenuItem = getMenuItem("Copy"));
-		elmMenu.add(elmDeleteMenuItem = getMenuItem("Delete"));
-		main.add(elmMenu);
-
-		scopeMenu = buildScopeMenu(false);
-		transScopeMenu = buildScopeMenu(true);
-
 		getSetupList(circuitsMenu, false);
+
 		if (useFrame)
 			setMenuBar(mb);
-		if (startCircuitText != null)
-			readSetup(startCircuitText);
-		else if (stopMessage == null && startCircuit != null)
-			readSetupFile(startCircuit, startLabel);
-		else
-			readSetup(null, 0, false);
 
-		if (useFrame) {
-			Dimension screen = getToolkit().getScreenSize();
-			resize(860, 640);
-			handleResize();
-			Dimension x = getSize();
-			setLocation((screen.width - x.width) / 2, (screen.height - x.height) / 2);
-			show();
-		} else {
-			if (!powerCheckItem.getState()) {
-				main.remove(powerBar);
-				main.remove(powerLabel);
-				main.validate();
-			}
-			hide();
-			handleResize();
-			applet.validate();
-		}
-		requestFocus();
-
-		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent we) {
-				destroyFrame();
-			}
-		});
 	}
 
 	boolean shown = false;

@@ -199,8 +199,10 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 	String startCircuitText = null;
 	String baseURL = "http://www.falstad.com/circuit/";
 
+	/**
+	 * Initialize the circuit simulation
+	 */
 	public void init() {
-		String euroResistor = null;
 		String useFrameStr = null;
 
 		CircuitElm.initClass(this);
@@ -237,10 +239,11 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		}
 
 		useFrame = (useFrameStr == null || !useFrameStr.equalsIgnoreCase("false"));
-		if (useFrame)
+		if (useFrame) {
 			main = this;
-		else
+		} else {
 			main = applet;
+		}
 
 		String os = System.getProperty("os.name");
 		isMac = (os.indexOf("Mac ") == 0);
@@ -272,6 +275,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		cv.addKeyListener(this);
 		main.add(cv);
 
+		// Build menus
 		setupMenus();
 
 		main.add(resetButton = new Button("Reset"));
@@ -302,8 +306,10 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 
 		main.add(new Label("www.falstad.com"));
 
-		if (useFrame)
+		if (useFrame) {
 			main.add(new Label(""));
+		}
+
 		Font f = new Font("SansSerif", 0, 10);
 		Label l;
 		l = new Label("Current Circuit:");
@@ -373,28 +379,25 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		});
 	}
 
+	/**
+	 * Setup menu items
+	 */
 	private void setupMenus() {
+		MenuBar mb = null;
+		boolean convention = true;
+		boolean printable = false;
 
 		String euroResistor = applet.getParameter("euroResistors");
 		boolean euro = (euroResistor != null && euroResistor.equalsIgnoreCase("true"));
 
-		boolean convention = true;
 		String strConventionalCurrent = applet.getParameter("conventionalCurrent");
 		if (strConventionalCurrent != null && strConventionalCurrent.equalsIgnoreCase("true")) {
 			convention = false;
 		}
 
-		boolean printable = false;
-
 		String strWhiteBG = applet.getParameter("whiteBackground");
 		if (strWhiteBG != null && strWhiteBG.equalsIgnoreCase("true")) {
 			printable = true;
-		}
-
-		mainMenu = new PopupMenu();
-		MenuBar mb = null;
-		if (useFrame) {
-			mb = new MenuBar();
 		}
 
 		// Create all menus
@@ -411,18 +414,14 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		Menu menuChip = new Menu("Chips");
 		Menu menuOther = new Menu("Other");
 
-		if (useFrame) {
-			mb.add(menuFile);
-		} else {
-			mainMenu.add(menuFile);
-		}
-
+		// File menu components
 		menuFile.add(importItem = getMenuItem("Import"));
 		menuFile.add(exportItem = getMenuItem("Export"));
 		menuFile.add(exportLinkItem = getMenuItem("Export Link"));
 		menuFile.addSeparator();
 		menuFile.add(exitItem = getMenuItem("Exit"));
 
+		// Edit menu components
 		menuEdit.add(undoItem = getMenuItem("Undo"));
 		undoItem.setShortcut(new MenuShortcut(KeyEvent.VK_Z));
 		menuEdit.add(redoItem = getMenuItem("Redo"));
@@ -437,27 +436,12 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		pasteItem.setEnabled(false);
 		menuEdit.add(selectAllItem = getMenuItem("Select All"));
 		selectAllItem.setShortcut(new MenuShortcut(KeyEvent.VK_A));
-		if (useFrame) {
-			mb.add(menuEdit);
-		} else {
-			mainMenu.add(menuEdit);
-		}
 
-		if (useFrame) {
-			mb.add(menuScope);
-		} else {
-			mainMenu.add(menuScope);
-		}
-
+		// Scope menu components
 		menuScope.add(getMenuItem("Stack All", "stackAll"));
 		menuScope.add(getMenuItem("Unstack All", "unstackAll"));
 
-		if (useFrame) {
-			mb.add(menuOptions);
-		} else {
-			mainMenu.add(menuOptions);
-		}
-
+		// Options menu components
 		menuOptions.add(dotsCheckItem = getCheckItem("Show Current"));
 		dotsCheckItem.setState(true);
 		menuOptions.add(voltsCheckItem = getCheckItem("Show Voltage"));
@@ -475,16 +459,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		conventionCheckItem.setState(convention);
 		menuOptions.add(optionsItem = getMenuItem("Other Options..."));
 
-		if (useFrame) {
-			mb.add(menuCircuits);
-		} else {
-			mainMenu.add(menuCircuits);
-		}
-
-		mainMenu.add(getClassCheckItem("Add Wire", "WireElm"));
-		mainMenu.add(getClassCheckItem("Add Resistor", "ResistorElm"));
-
-		mainMenu.add(menuPass);
+		// Passive menu components
 		menuPass.add(getClassCheckItem("Add Capacitor", "CapacitorElm"));
 		menuPass.add(getClassCheckItem("Add Inductor", "InductorElm"));
 		menuPass.add(getClassCheckItem("Add Switch", "SwitchElm"));
@@ -498,7 +473,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		menuPass.add(getClassCheckItem("Add Memristor", "MemristorElm"));
 		menuPass.add(getClassCheckItem("Add Spark Gap", "SparkGapElm"));
 
-		mainMenu.add(menuInput);
+		// Input menu components
 		menuInput.add(getClassCheckItem("Add Ground", "GroundElm"));
 		menuInput.add(getClassCheckItem("Add Voltage Source (2-terminal)", "DCVoltageElm"));
 		menuInput.add(getClassCheckItem("Add A/C Source (2-terminal)", "ACVoltageElm"));
@@ -523,7 +498,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		// inputMenu.add(getClassCheckItem("Add Speaker Output",
 		// "SignalOutElm"));
 
-		mainMenu.add(menuActive);
+		// Active menu components
 		menuActive.add(getClassCheckItem("Add Diode", "DiodeElm"));
 		menuActive.add(getClassCheckItem("Add Zener Diode", "ZenerElm"));
 		menuActive.add(getClassCheckItem("Add Transistor (bipolar, NPN)", "NTransistorElm"));
@@ -552,7 +527,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		menuActive.add(getClassCheckItem("Add CCII+", "CC2Elm"));
 		menuActive.add(getClassCheckItem("Add CCII-", "CC2NegElm"));
 
-		mainMenu.add(menuGate);
+		// Gate menu components
 		menuGate.add(getClassCheckItem("Add Inverter", "InverterElm"));
 		menuGate.add(getClassCheckItem("Add NAND Gate", "NandGateElm"));
 		menuGate.add(getClassCheckItem("Add NOR Gate", "NorGateElm"));
@@ -560,7 +535,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		menuGate.add(getClassCheckItem("Add OR Gate", "OrGateElm"));
 		menuGate.add(getClassCheckItem("Add XOR Gate", "XorGateElm"));
 
-		mainMenu.add(menuChip);
+		// Chip menu components
 		menuChip.add(getClassCheckItem("Add D Flip-Flop", "DFlipFlopElm"));
 		menuChip.add(getClassCheckItem("Add JK Flip-Flop", "JKFlipFlopElm"));
 		menuChip.add(getClassCheckItem("Add T Flip-Flop", "TFlipFlopElm"));
@@ -584,7 +559,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		menuChip.add(getClassCheckItem("Add Half Adder", "HalfAdderElm"));
 		menuChip.add(getClassCheckItem("Add Monostable", "MonostableElm"));
 
-		mainMenu.add(menuOther);
+		// Other menu components
 		menuOther.add(getClassCheckItem("Add Text", "TextElm"));
 		menuOther.add(getClassCheckItem("Add Box", "BoxElm"));
 		menuOther.add(getClassCheckItem("Add Scope Probe", "ProbeElm"));
@@ -594,6 +569,34 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 				"DragColumn"));
 		menuOther.add(getCheckItem("Drag Selected", "DragSelected"));
 		menuOther.add(getCheckItem("Drag Post (" + ctrlMetaKey + "-drag)", "DragPost"));
+
+		// Create main menu and add items
+		mainMenu = new PopupMenu();
+		mainMenu.add(getClassCheckItem("Add Wire", "WireElm"));
+		mainMenu.add(getClassCheckItem("Add Resistor", "ResistorElm"));
+		mainMenu.add(getClassCheckItem("Add Wire", "WireElm"));
+		mainMenu.add(getClassCheckItem("Add Resistor", "ResistorElm"));
+		mainMenu.add(menuPass);
+		mainMenu.add(menuInput);
+		mainMenu.add(menuActive);
+		mainMenu.add(menuGate);
+		mainMenu.add(menuChip);
+		mainMenu.add(menuOther);
+
+		if (useFrame) {
+			mb = new MenuBar();
+			mb.add(menuFile);
+			mb.add(menuEdit);
+			mb.add(menuScope);
+			mb.add(menuOptions);
+			mb.add(menuCircuits);
+		} else {
+			mainMenu.add(menuFile);
+			mainMenu.add(menuEdit);
+			mainMenu.add(menuScope);
+			mainMenu.add(menuOptions);
+			mainMenu.add(menuCircuits);
+		}
 
 		mainMenu.add(getCheckItem("Select/Drag Selected (space or Shift-drag)", "Select"));
 		main.add(mainMenu);
@@ -796,6 +799,9 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 	int steps = 0;
 	int framerate = 0, steprate = 0;
 
+	/**
+	 * @param realg
+	 */
 	public void updateCircuit(Graphics realg) {
 		CircuitElm realMouseElm;
 		if (winSize == null || winSize.width == 0)
@@ -1147,9 +1153,15 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 	}
 
 	void analyzeCircuit() {
+
+		// Find bottom border of circuit
 		calcCircuitBottom();
-		if (elmList.isEmpty())
+
+		// Quit out early if no elements are present
+		if (elmList.isEmpty()) {
 			return;
+		}
+
 		stopMessage = null;
 		stopElm = null;
 		int i, j;
@@ -1161,6 +1173,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 
 		// System.out.println("ac1");
 		// look for voltage or ground element
+		// detect if there are any ground or voltage elements
 		for (i = 0; i != elmList.size(); i++) {
 			CircuitElm ce = getElm(i);
 			if (ce instanceof GroundElm) {

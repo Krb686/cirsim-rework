@@ -379,216 +379,230 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		boolean euro = (euroResistor != null && euroResistor.equalsIgnoreCase("true"));
 
 		boolean convention = true;
-		String x = applet.getParameter("conventionalCurrent");
-		if (x != null && x.equalsIgnoreCase("true")) {
+		String strConventionalCurrent = applet.getParameter("conventionalCurrent");
+		if (strConventionalCurrent != null && strConventionalCurrent.equalsIgnoreCase("true")) {
 			convention = false;
 		}
 
 		boolean printable = false;
 
-		x = applet.getParameter("whiteBackground");
-		if (x != null && x.equalsIgnoreCase("true")) {
+		String strWhiteBG = applet.getParameter("whiteBackground");
+		if (strWhiteBG != null && strWhiteBG.equalsIgnoreCase("true")) {
 			printable = true;
 		}
 
 		mainMenu = new PopupMenu();
 		MenuBar mb = null;
-		if (useFrame)
+		if (useFrame) {
 			mb = new MenuBar();
-		Menu m = new Menu("File");
-		if (useFrame)
-			mb.add(m);
-		else
-			mainMenu.add(m);
-		m.add(importItem = getMenuItem("Import"));
-		m.add(exportItem = getMenuItem("Export"));
-		m.add(exportLinkItem = getMenuItem("Export Link"));
-		m.addSeparator();
-		m.add(exitItem = getMenuItem("Exit"));
+		}
 
-		m = new Menu("Edit");
-		m.add(undoItem = getMenuItem("Undo"));
+		// Create all menus
+		Menu menuFile = new Menu("File");
+		Menu menuEdit = new Menu("Edit");
+		Menu menuScope = new Menu("Scope");
+		Menu menuOptions = new Menu("Options");
+		optionsMenu = menuOptions;
+		Menu menuCircuits = new Menu("Circuits");
+		Menu menuPass = new Menu("Passive Components");
+		Menu menuInput = new Menu("Inputs/Outputs");
+		Menu menuActive = new Menu("Active Components");
+		Menu menuGate = new Menu("Logic Gates");
+		Menu menuChip = new Menu("Chips");
+		Menu menuOther = new Menu("Other");
+
+		if (useFrame) {
+			mb.add(menuFile);
+		} else {
+			mainMenu.add(menuFile);
+		}
+
+		menuFile.add(importItem = getMenuItem("Import"));
+		menuFile.add(exportItem = getMenuItem("Export"));
+		menuFile.add(exportLinkItem = getMenuItem("Export Link"));
+		menuFile.addSeparator();
+		menuFile.add(exitItem = getMenuItem("Exit"));
+
+		menuEdit.add(undoItem = getMenuItem("Undo"));
 		undoItem.setShortcut(new MenuShortcut(KeyEvent.VK_Z));
-		m.add(redoItem = getMenuItem("Redo"));
+		menuEdit.add(redoItem = getMenuItem("Redo"));
 		redoItem.setShortcut(new MenuShortcut(KeyEvent.VK_Z, true));
-		m.addSeparator();
-		m.add(cutItem = getMenuItem("Cut"));
+		menuEdit.addSeparator();
+		menuEdit.add(cutItem = getMenuItem("Cut"));
 		cutItem.setShortcut(new MenuShortcut(KeyEvent.VK_X));
-		m.add(copyItem = getMenuItem("Copy"));
+		menuEdit.add(copyItem = getMenuItem("Copy"));
 		copyItem.setShortcut(new MenuShortcut(KeyEvent.VK_C));
-		m.add(pasteItem = getMenuItem("Paste"));
+		menuEdit.add(pasteItem = getMenuItem("Paste"));
 		pasteItem.setShortcut(new MenuShortcut(KeyEvent.VK_V));
 		pasteItem.setEnabled(false);
-		m.add(selectAllItem = getMenuItem("Select All"));
+		menuEdit.add(selectAllItem = getMenuItem("Select All"));
 		selectAllItem.setShortcut(new MenuShortcut(KeyEvent.VK_A));
-		if (useFrame)
-			mb.add(m);
-		else
-			mainMenu.add(m);
+		if (useFrame) {
+			mb.add(menuEdit);
+		} else {
+			mainMenu.add(menuEdit);
+		}
 
-		m = new Menu("Scope");
-		if (useFrame)
-			mb.add(m);
-		else
-			mainMenu.add(m);
-		m.add(getMenuItem("Stack All", "stackAll"));
-		m.add(getMenuItem("Unstack All", "unstackAll"));
+		if (useFrame) {
+			mb.add(menuScope);
+		} else {
+			mainMenu.add(menuScope);
+		}
 
-		optionsMenu = m = new Menu("Options");
-		if (useFrame)
-			mb.add(m);
-		else
-			mainMenu.add(m);
-		m.add(dotsCheckItem = getCheckItem("Show Current"));
+		menuScope.add(getMenuItem("Stack All", "stackAll"));
+		menuScope.add(getMenuItem("Unstack All", "unstackAll"));
+
+		if (useFrame) {
+			mb.add(menuOptions);
+		} else {
+			mainMenu.add(menuOptions);
+		}
+
+		menuOptions.add(dotsCheckItem = getCheckItem("Show Current"));
 		dotsCheckItem.setState(true);
-		m.add(voltsCheckItem = getCheckItem("Show Voltage"));
+		menuOptions.add(voltsCheckItem = getCheckItem("Show Voltage"));
 		voltsCheckItem.setState(true);
-		m.add(powerCheckItem = getCheckItem("Show Power"));
-		m.add(showValuesCheckItem = getCheckItem("Show Values"));
+		menuOptions.add(powerCheckItem = getCheckItem("Show Power"));
+		menuOptions.add(showValuesCheckItem = getCheckItem("Show Values"));
 		showValuesCheckItem.setState(true);
 		// m.add(conductanceCheckItem = getCheckItem("Show Conductance"));
-		m.add(smallGridCheckItem = getCheckItem("Small Grid"));
-		m.add(euroResistorCheckItem = getCheckItem("European Resistors"));
+		menuOptions.add(smallGridCheckItem = getCheckItem("Small Grid"));
+		menuOptions.add(euroResistorCheckItem = getCheckItem("European Resistors"));
 		euroResistorCheckItem.setState(euro);
-		m.add(printableCheckItem = getCheckItem("White Background"));
+		menuOptions.add(printableCheckItem = getCheckItem("White Background"));
 		printableCheckItem.setState(printable);
-		m.add(conventionCheckItem = getCheckItem("Conventional Current Motion"));
+		menuOptions.add(conventionCheckItem = getCheckItem("Conventional Current Motion"));
 		conventionCheckItem.setState(convention);
-		m.add(optionsItem = getMenuItem("Other Options..."));
+		menuOptions.add(optionsItem = getMenuItem("Other Options..."));
 
-		Menu circuitsMenu = new Menu("Circuits");
-		if (useFrame)
-			mb.add(circuitsMenu);
-		else
-			mainMenu.add(circuitsMenu);
+		if (useFrame) {
+			mb.add(menuCircuits);
+		} else {
+			mainMenu.add(menuCircuits);
+		}
 
 		mainMenu.add(getClassCheckItem("Add Wire", "WireElm"));
 		mainMenu.add(getClassCheckItem("Add Resistor", "ResistorElm"));
 
-		Menu passMenu = new Menu("Passive Components");
-		mainMenu.add(passMenu);
-		passMenu.add(getClassCheckItem("Add Capacitor", "CapacitorElm"));
-		passMenu.add(getClassCheckItem("Add Inductor", "InductorElm"));
-		passMenu.add(getClassCheckItem("Add Switch", "SwitchElm"));
-		passMenu.add(getClassCheckItem("Add Push Switch", "PushSwitchElm"));
-		passMenu.add(getClassCheckItem("Add SPDT Switch", "Switch2Elm"));
-		passMenu.add(getClassCheckItem("Add Potentiometer", "PotElm"));
-		passMenu.add(getClassCheckItem("Add Transformer", "TransformerElm"));
-		passMenu.add(getClassCheckItem("Add Tapped Transformer", "TappedTransformerElm"));
-		passMenu.add(getClassCheckItem("Add Transmission Line", "TransLineElm"));
-		passMenu.add(getClassCheckItem("Add Relay", "RelayElm"));
-		passMenu.add(getClassCheckItem("Add Memristor", "MemristorElm"));
-		passMenu.add(getClassCheckItem("Add Spark Gap", "SparkGapElm"));
+		mainMenu.add(menuPass);
+		menuPass.add(getClassCheckItem("Add Capacitor", "CapacitorElm"));
+		menuPass.add(getClassCheckItem("Add Inductor", "InductorElm"));
+		menuPass.add(getClassCheckItem("Add Switch", "SwitchElm"));
+		menuPass.add(getClassCheckItem("Add Push Switch", "PushSwitchElm"));
+		menuPass.add(getClassCheckItem("Add SPDT Switch", "Switch2Elm"));
+		menuPass.add(getClassCheckItem("Add Potentiometer", "PotElm"));
+		menuPass.add(getClassCheckItem("Add Transformer", "TransformerElm"));
+		menuPass.add(getClassCheckItem("Add Tapped Transformer", "TappedTransformerElm"));
+		menuPass.add(getClassCheckItem("Add Transmission Line", "TransLineElm"));
+		menuPass.add(getClassCheckItem("Add Relay", "RelayElm"));
+		menuPass.add(getClassCheckItem("Add Memristor", "MemristorElm"));
+		menuPass.add(getClassCheckItem("Add Spark Gap", "SparkGapElm"));
 
-		Menu inputMenu = new Menu("Inputs/Outputs");
-		mainMenu.add(inputMenu);
-		inputMenu.add(getClassCheckItem("Add Ground", "GroundElm"));
-		inputMenu.add(getClassCheckItem("Add Voltage Source (2-terminal)", "DCVoltageElm"));
-		inputMenu.add(getClassCheckItem("Add A/C Source (2-terminal)", "ACVoltageElm"));
-		inputMenu.add(getClassCheckItem("Add Voltage Source (1-terminal)", "RailElm"));
-		inputMenu.add(getClassCheckItem("Add A/C Source (1-terminal)", "ACRailElm"));
-		inputMenu.add(getClassCheckItem("Add Square Wave (1-terminal)", "SquareRailElm"));
-		inputMenu.add(getClassCheckItem("Add Analog Output", "OutputElm"));
-		inputMenu.add(getClassCheckItem("Add Logic Input", "LogicInputElm"));
-		inputMenu.add(getClassCheckItem("Add Logic Output", "LogicOutputElm"));
-		inputMenu.add(getClassCheckItem("Add Clock", "ClockElm"));
-		inputMenu.add(getClassCheckItem("Add A/C Sweep", "SweepElm"));
-		inputMenu.add(getClassCheckItem("Add Var. Voltage", "VarRailElm"));
-		inputMenu.add(getClassCheckItem("Add Antenna", "AntennaElm"));
-		inputMenu.add(getClassCheckItem("Add AM source", "AMElm"));
-		inputMenu.add(getClassCheckItem("Add FM source", "FMElm"));
-		inputMenu.add(getClassCheckItem("Add Current Source", "CurrentElm"));
-		inputMenu.add(getClassCheckItem("Add LED", "LEDElm"));
-		inputMenu.add(getClassCheckItem("Add Lamp (beta)", "LampElm"));
-		inputMenu.add(getClassCheckItem("Add LED Matrix", "LEDMatrixElm"));
+		mainMenu.add(menuInput);
+		menuInput.add(getClassCheckItem("Add Ground", "GroundElm"));
+		menuInput.add(getClassCheckItem("Add Voltage Source (2-terminal)", "DCVoltageElm"));
+		menuInput.add(getClassCheckItem("Add A/C Source (2-terminal)", "ACVoltageElm"));
+		menuInput.add(getClassCheckItem("Add Voltage Source (1-terminal)", "RailElm"));
+		menuInput.add(getClassCheckItem("Add A/C Source (1-terminal)", "ACRailElm"));
+		menuInput.add(getClassCheckItem("Add Square Wave (1-terminal)", "SquareRailElm"));
+		menuInput.add(getClassCheckItem("Add Analog Output", "OutputElm"));
+		menuInput.add(getClassCheckItem("Add Logic Input", "LogicInputElm"));
+		menuInput.add(getClassCheckItem("Add Logic Output", "LogicOutputElm"));
+		menuInput.add(getClassCheckItem("Add Clock", "ClockElm"));
+		menuInput.add(getClassCheckItem("Add A/C Sweep", "SweepElm"));
+		menuInput.add(getClassCheckItem("Add Var. Voltage", "VarRailElm"));
+		menuInput.add(getClassCheckItem("Add Antenna", "AntennaElm"));
+		menuInput.add(getClassCheckItem("Add AM source", "AMElm"));
+		menuInput.add(getClassCheckItem("Add FM source", "FMElm"));
+		menuInput.add(getClassCheckItem("Add Current Source", "CurrentElm"));
+		menuInput.add(getClassCheckItem("Add LED", "LEDElm"));
+		menuInput.add(getClassCheckItem("Add Lamp (beta)", "LampElm"));
+		menuInput.add(getClassCheckItem("Add LED Matrix", "LEDMatrixElm"));
 		// inputMenu.add(getClassCheckItem("Add Microphone Input",
 		// "SignalInElm"));
 		// inputMenu.add(getClassCheckItem("Add Speaker Output",
 		// "SignalOutElm"));
 
-		Menu activeMenu = new Menu("Active Components");
-		mainMenu.add(activeMenu);
-		activeMenu.add(getClassCheckItem("Add Diode", "DiodeElm"));
-		activeMenu.add(getClassCheckItem("Add Zener Diode", "ZenerElm"));
-		activeMenu.add(getClassCheckItem("Add Transistor (bipolar, NPN)", "NTransistorElm"));
-		activeMenu.add(getClassCheckItem("Add Transistor (bipolar, PNP)", "PTransistorElm"));
-		activeMenu.add(getClassCheckItem("Add Op Amp (- on top)", "OpAmpElm"));
-		activeMenu.add(getClassCheckItem("Add Op Amp (+ on top)", "OpAmpSwapElm"));
-		activeMenu.add(getClassCheckItem("Add MOSFET (n-channel)", "NMosfetElm"));
-		activeMenu.add(getClassCheckItem("Add MOSFET (p-channel)", "PMosfetElm"));
-		activeMenu.add(getClassCheckItem("Add JFET (n-channel)", "NJfetElm"));
-		activeMenu.add(getClassCheckItem("Add JFET (p-channel)", "PJfetElm"));
-		activeMenu.add(getClassCheckItem("Add Analog Switch (SPST)", "AnalogSwitchElm"));
-		activeMenu.add(getClassCheckItem("Add Analog Switch (SPDT)", "AnalogSwitch2Elm"));
-		activeMenu.add(getClassCheckItem("Add Tristate buffer", "TriStateElm"));
-		activeMenu.add(getClassCheckItem("Add Schmitt Trigger", "SchmittElm"));
-		activeMenu.add(getClassCheckItem("Add Schmitt Trigger (Inverting)", "InvertingSchmittElm"));
-		activeMenu.add(getClassCheckItem("Add SCR", "SCRElm"));
+		mainMenu.add(menuActive);
+		menuActive.add(getClassCheckItem("Add Diode", "DiodeElm"));
+		menuActive.add(getClassCheckItem("Add Zener Diode", "ZenerElm"));
+		menuActive.add(getClassCheckItem("Add Transistor (bipolar, NPN)", "NTransistorElm"));
+		menuActive.add(getClassCheckItem("Add Transistor (bipolar, PNP)", "PTransistorElm"));
+		menuActive.add(getClassCheckItem("Add Op Amp (- on top)", "OpAmpElm"));
+		menuActive.add(getClassCheckItem("Add Op Amp (+ on top)", "OpAmpSwapElm"));
+		menuActive.add(getClassCheckItem("Add MOSFET (n-channel)", "NMosfetElm"));
+		menuActive.add(getClassCheckItem("Add MOSFET (p-channel)", "PMosfetElm"));
+		menuActive.add(getClassCheckItem("Add JFET (n-channel)", "NJfetElm"));
+		menuActive.add(getClassCheckItem("Add JFET (p-channel)", "PJfetElm"));
+		menuActive.add(getClassCheckItem("Add Analog Switch (SPST)", "AnalogSwitchElm"));
+		menuActive.add(getClassCheckItem("Add Analog Switch (SPDT)", "AnalogSwitch2Elm"));
+		menuActive.add(getClassCheckItem("Add Tristate buffer", "TriStateElm"));
+		menuActive.add(getClassCheckItem("Add Schmitt Trigger", "SchmittElm"));
+		menuActive.add(getClassCheckItem("Add Schmitt Trigger (Inverting)", "InvertingSchmittElm"));
+		menuActive.add(getClassCheckItem("Add SCR", "SCRElm"));
 		// activeMenu.add(getClassCheckItem("Add Varactor/Varicap",
 		// "VaractorElm"));
-		activeMenu.add(getClassCheckItem("Add Tunnel Diode", "TunnelDiodeElm"));
-		activeMenu.add(getClassCheckItem("Add Triode", "TriodeElm"));
+		menuActive.add(getClassCheckItem("Add Tunnel Diode", "TunnelDiodeElm"));
+		menuActive.add(getClassCheckItem("Add Triode", "TriodeElm"));
 		// activeMenu.add(getClassCheckItem("Add Diac", "DiacElm"));
 		// activeMenu.add(getClassCheckItem("Add Triac", "TriacElm"));
 		// activeMenu.add(getClassCheckItem("Add Photoresistor",
 		// "PhotoResistorElm"));
 		// activeMenu.add(getClassCheckItem("Add Thermistor", "ThermistorElm"));
-		activeMenu.add(getClassCheckItem("Add CCII+", "CC2Elm"));
-		activeMenu.add(getClassCheckItem("Add CCII-", "CC2NegElm"));
+		menuActive.add(getClassCheckItem("Add CCII+", "CC2Elm"));
+		menuActive.add(getClassCheckItem("Add CCII-", "CC2NegElm"));
 
-		Menu gateMenu = new Menu("Logic Gates");
-		mainMenu.add(gateMenu);
-		gateMenu.add(getClassCheckItem("Add Inverter", "InverterElm"));
-		gateMenu.add(getClassCheckItem("Add NAND Gate", "NandGateElm"));
-		gateMenu.add(getClassCheckItem("Add NOR Gate", "NorGateElm"));
-		gateMenu.add(getClassCheckItem("Add AND Gate", "AndGateElm"));
-		gateMenu.add(getClassCheckItem("Add OR Gate", "OrGateElm"));
-		gateMenu.add(getClassCheckItem("Add XOR Gate", "XorGateElm"));
+		mainMenu.add(menuGate);
+		menuGate.add(getClassCheckItem("Add Inverter", "InverterElm"));
+		menuGate.add(getClassCheckItem("Add NAND Gate", "NandGateElm"));
+		menuGate.add(getClassCheckItem("Add NOR Gate", "NorGateElm"));
+		menuGate.add(getClassCheckItem("Add AND Gate", "AndGateElm"));
+		menuGate.add(getClassCheckItem("Add OR Gate", "OrGateElm"));
+		menuGate.add(getClassCheckItem("Add XOR Gate", "XorGateElm"));
 
-		Menu chipMenu = new Menu("Chips");
-		mainMenu.add(chipMenu);
-		chipMenu.add(getClassCheckItem("Add D Flip-Flop", "DFlipFlopElm"));
-		chipMenu.add(getClassCheckItem("Add JK Flip-Flop", "JKFlipFlopElm"));
-		chipMenu.add(getClassCheckItem("Add T Flip-Flop", "TFlipFlopElm"));
-		chipMenu.add(getClassCheckItem("Add 7 Segment LED", "SevenSegElm"));
-		chipMenu.add(getClassCheckItem("Add 7 Segment Decoder", "SevenSegDecoderElm"));
-		chipMenu.add(getClassCheckItem("Add Multiplexer", "MultiplexerElm"));
-		chipMenu.add(getClassCheckItem("Add Demultiplexer", "DeMultiplexerElm"));
-		chipMenu.add(getClassCheckItem("Add SIPO shift register", "SipoShiftElm"));
-		chipMenu.add(getClassCheckItem("Add PISO shift register", "PisoShiftElm"));
-		chipMenu.add(getClassCheckItem("Add Phase Comparator", "PhaseCompElm"));
-		chipMenu.add(getClassCheckItem("Add Counter", "CounterElm"));
-		chipMenu.add(getClassCheckItem("Add Decade Counter", "DecadeElm"));
-		chipMenu.add(getClassCheckItem("Add 555 Timer", "TimerElm"));
-		chipMenu.add(getClassCheckItem("Add DAC", "DACElm"));
-		chipMenu.add(getClassCheckItem("Add ADC", "ADCElm"));
-		chipMenu.add(getClassCheckItem("Add Latch", "LatchElm"));
+		mainMenu.add(menuChip);
+		menuChip.add(getClassCheckItem("Add D Flip-Flop", "DFlipFlopElm"));
+		menuChip.add(getClassCheckItem("Add JK Flip-Flop", "JKFlipFlopElm"));
+		menuChip.add(getClassCheckItem("Add T Flip-Flop", "TFlipFlopElm"));
+		menuChip.add(getClassCheckItem("Add 7 Segment LED", "SevenSegElm"));
+		menuChip.add(getClassCheckItem("Add 7 Segment Decoder", "SevenSegDecoderElm"));
+		menuChip.add(getClassCheckItem("Add Multiplexer", "MultiplexerElm"));
+		menuChip.add(getClassCheckItem("Add Demultiplexer", "DeMultiplexerElm"));
+		menuChip.add(getClassCheckItem("Add SIPO shift register", "SipoShiftElm"));
+		menuChip.add(getClassCheckItem("Add PISO shift register", "PisoShiftElm"));
+		menuChip.add(getClassCheckItem("Add Phase Comparator", "PhaseCompElm"));
+		menuChip.add(getClassCheckItem("Add Counter", "CounterElm"));
+		menuChip.add(getClassCheckItem("Add Decade Counter", "DecadeElm"));
+		menuChip.add(getClassCheckItem("Add 555 Timer", "TimerElm"));
+		menuChip.add(getClassCheckItem("Add DAC", "DACElm"));
+		menuChip.add(getClassCheckItem("Add ADC", "ADCElm"));
+		menuChip.add(getClassCheckItem("Add Latch", "LatchElm"));
 		// chipMenu.add(getClassCheckItem("Add Static RAM", "SRAMElm"));
-		chipMenu.add(getClassCheckItem("Add Sequence generator", "SeqGenElm"));
-		chipMenu.add(getClassCheckItem("Add VCO", "VCOElm"));
-		chipMenu.add(getClassCheckItem("Add Full Adder", "FullAdderElm"));
-		chipMenu.add(getClassCheckItem("Add Half Adder", "HalfAdderElm"));
-		chipMenu.add(getClassCheckItem("Add Monostable", "MonostableElm"));
+		menuChip.add(getClassCheckItem("Add Sequence generator", "SeqGenElm"));
+		menuChip.add(getClassCheckItem("Add VCO", "VCOElm"));
+		menuChip.add(getClassCheckItem("Add Full Adder", "FullAdderElm"));
+		menuChip.add(getClassCheckItem("Add Half Adder", "HalfAdderElm"));
+		menuChip.add(getClassCheckItem("Add Monostable", "MonostableElm"));
 
-		Menu otherMenu = new Menu("Other");
-		mainMenu.add(otherMenu);
-		otherMenu.add(getClassCheckItem("Add Text", "TextElm"));
-		otherMenu.add(getClassCheckItem("Add Box", "BoxElm"));
-		otherMenu.add(getClassCheckItem("Add Scope Probe", "ProbeElm"));
-		otherMenu.add(getCheckItem("Drag All (Alt-drag)", "DragAll"));
-		otherMenu.add(getCheckItem(isMac ? "Drag Row (Alt-S-drag, S-right)" : "Drag Row (S-right)", "DragRow"));
-		otherMenu.add(getCheckItem(isMac ? "Drag Column (Alt-\u2318-drag, \u2318-right)" : "Drag Column (C-right)",
+		mainMenu.add(menuOther);
+		menuOther.add(getClassCheckItem("Add Text", "TextElm"));
+		menuOther.add(getClassCheckItem("Add Box", "BoxElm"));
+		menuOther.add(getClassCheckItem("Add Scope Probe", "ProbeElm"));
+		menuOther.add(getCheckItem("Drag All (Alt-drag)", "DragAll"));
+		menuOther.add(getCheckItem(isMac ? "Drag Row (Alt-S-drag, S-right)" : "Drag Row (S-right)", "DragRow"));
+		menuOther.add(getCheckItem(isMac ? "Drag Column (Alt-\u2318-drag, \u2318-right)" : "Drag Column (C-right)",
 				"DragColumn"));
-		otherMenu.add(getCheckItem("Drag Selected", "DragSelected"));
-		otherMenu.add(getCheckItem("Drag Post (" + ctrlMetaKey + "-drag)", "DragPost"));
+		menuOther.add(getCheckItem("Drag Selected", "DragSelected"));
+		menuOther.add(getCheckItem("Drag Post (" + ctrlMetaKey + "-drag)", "DragPost"));
 
 		mainMenu.add(getCheckItem("Select/Drag Selected (space or Shift-drag)", "Select"));
 		main.add(mainMenu);
 
-		getSetupList(circuitsMenu, false);
+		getSetupList(menuCircuits, false);
 
-		if (useFrame)
+		if (useFrame) {
 			setMenuBar(mb);
+		}
 
 	}
 
@@ -2201,7 +2215,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 			// directory, try reading from the jar file
 			ByteArrayOutputStream ba = null;
 			try {
-				URL url = new URL(getCodeBase() + "setuplist.txt");
+				URL url = new URL(getCodeBase() + "../config/setuplist.txt");
 				ba = readUrlData(url);
 			} catch (Exception e) {
 				URL url = getClass().getClassLoader().getResource("setuplist.txt");

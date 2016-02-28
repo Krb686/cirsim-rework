@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Checkbox;
 import java.util.StringTokenizer;
 
 class MonostableElm extends ChipElm {
@@ -20,10 +20,12 @@ class MonostableElm extends ChipElm {
 		delay = new Double(st.nextToken()).doubleValue();
 	}
 
+	@Override
 	String getChipName() {
 		return "Monostable";
 	}
 
+	@Override
 	void setupPins() {
 		sizeX = 2;
 		sizeY = 2;
@@ -37,14 +39,17 @@ class MonostableElm extends ChipElm {
 		pins[2].lineOver = true;
 	}
 
+	@Override
 	int getPostCount() {
 		return 3;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 2;
 	}
 
+	@Override
 	void execute() {
 
 		if (pins[0].value && prevInputValue != pins[0].value && (retriggerable || !triggered)) {
@@ -62,14 +67,17 @@ class MonostableElm extends ChipElm {
 		prevInputValue = pins[0].value;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + retriggerable + " " + delay;
 	}
 
+	@Override
 	int getDumpType() {
 		return 194;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 2) {
 			EditInfo ei = new EditInfo("", 0, -1, -1);
@@ -83,6 +91,7 @@ class MonostableElm extends ChipElm {
 		return super.getEditInfo(n);
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 2) {
 			retriggerable = ei.checkbox.getState();

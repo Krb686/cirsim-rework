@@ -1,4 +1,8 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 class OutputElm extends CircuitElm {
@@ -12,19 +16,23 @@ class OutputElm extends CircuitElm {
 		super(xa, ya, xb, yb, f);
 	}
 
+	@Override
 	int getDumpType() {
 		return 'O';
 	}
 
+	@Override
 	int getPostCount() {
 		return 1;
 	}
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		lead1 = new Point();
 	}
 
+	@Override
 	void draw(Graphics g) {
 		boolean selected = (needsHighlight() || sim.plotYElm == this);
 		Font f = new Font("SansSerif", selected ? Font.BOLD : 0, 14);
@@ -46,15 +54,18 @@ class OutputElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	double getVoltageDiff() {
 		return volts[0];
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "output";
 		arr[1] = "V = " + getVoltageText(volts[0]);
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0) {
 			EditInfo ei = new EditInfo("", 0, -1, -1);
@@ -64,6 +75,7 @@ class OutputElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0)
 			flags = (ei.checkbox.getState()) ? (flags | FLAG_VALUE) : (flags & ~FLAG_VALUE);

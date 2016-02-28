@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 class TriodeElm extends CircuitElm {
@@ -24,19 +26,23 @@ class TriodeElm extends CircuitElm {
 		noDiagonal = true;
 	}
 
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
 
+	@Override
 	void reset() {
 		volts[0] = volts[1] = volts[2] = 0;
 		curcount = 0;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + mu + " " + kg1;
 	}
 
+	@Override
 	int getDumpType() {
 		return 173;
 	}
@@ -44,6 +50,7 @@ class TriodeElm extends CircuitElm {
 	Point plate[], grid[], cath[], midgrid, midcath;
 	int circler;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		plate = newPointArray(4);
@@ -73,6 +80,7 @@ class TriodeElm extends CircuitElm {
 		interpPoint(point2, plate[1], cath[0], -farw / (double) nearw, cathw);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		g.setColor(Color.gray);
 		drawThickCircle(g, point2.x, point2.y, circler);
@@ -106,20 +114,24 @@ class TriodeElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	Point getPost(int n) {
 		return (n == 0) ? plate[0] : (n == 1) ? grid[0] : cath[0];
 	}
 
+	@Override
 	int getPostCount() {
 		return 3;
 	}
 
+	@Override
 	double getPower() {
 		return (volts[0] - volts[2]) * current;
 	}
 
 	double lastv0, lastv1, lastv2;
 
+	@Override
 	void doStep() {
 		double vs[] = new double[3];
 		vs[0] = volts[0];
@@ -180,12 +192,14 @@ class TriodeElm extends CircuitElm {
 		sim.stampRightSide(nodes[cath], -rs);
 	}
 
+	@Override
 	void stamp() {
 		sim.stampNonLinear(nodes[0]);
 		sim.stampNonLinear(nodes[1]);
 		sim.stampNonLinear(nodes[2]);
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "triode";
 		double vbc = volts[0] - volts[1];
@@ -197,6 +211,7 @@ class TriodeElm extends CircuitElm {
 	}
 
 	// grid not connected to other terminals
+	@Override
 	boolean getConnection(int n1, int n2) {
 		return !(n1 == 1 || n2 == 1);
 	}

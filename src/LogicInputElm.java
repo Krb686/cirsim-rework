@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.util.StringTokenizer;
 
 class LogicInputElm extends SwitchElm {
@@ -33,23 +35,28 @@ class LogicInputElm extends SwitchElm {
 		return (flags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0;
 	}
 
+	@Override
 	int getDumpType() {
 		return 'L';
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + hiV + " " + loV;
 	}
 
+	@Override
 	int getPostCount() {
 		return 1;
 	}
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		lead1 = interpPoint(point1, point2, 1 - 12 / dn);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		Font f = new Font("SansSerif", Font.BOLD, 20);
 		g.setFont(f);
@@ -66,10 +73,12 @@ class LogicInputElm extends SwitchElm {
 		drawPosts(g);
 	}
 
+	@Override
 	void setCurrent(int vs, double c) {
 		current = -c;
 	}
 
+	@Override
 	void stamp() {
 		double v = (position == 0) ? loV : hiV;
 		if (isTernary())
@@ -77,14 +86,17 @@ class LogicInputElm extends SwitchElm {
 		sim.stampVoltageSource(0, nodes[0], voltSource, v);
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
 
+	@Override
 	double getVoltageDiff() {
 		return volts[0];
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "logic input";
 		arr[1] = (position == 0) ? "low" : "high";
@@ -94,10 +106,12 @@ class LogicInputElm extends SwitchElm {
 		arr[2] = "I = " + getCurrentText(getCurrent());
 	}
 
+	@Override
 	boolean hasGroundConnection(int n1) {
 		return true;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0) {
 			EditInfo ei = new EditInfo("", 0, 0, 0);
@@ -111,6 +125,7 @@ class LogicInputElm extends SwitchElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0)
 			momentary = ei.checkbox.getState();
@@ -120,6 +135,7 @@ class LogicInputElm extends SwitchElm {
 			loV = ei.value;
 	}
 
+	@Override
 	int getShortcut() {
 		return 'i';
 	}

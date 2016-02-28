@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Graphics;
 import java.util.StringTokenizer;
 
 class VCOElm extends ChipElm {
@@ -10,10 +10,12 @@ class VCOElm extends ChipElm {
 		super(xa, ya, xb, yb, f, st);
 	}
 
+	@Override
 	String getChipName() {
 		return "VCO";
 	}
 
+	@Override
 	void setupPins() {
 		sizeX = 2;
 		sizeY = 4;
@@ -29,10 +31,12 @@ class VCOElm extends ChipElm {
 		pins[5].output = true;
 	}
 
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
 
+	@Override
 	void stamp() {
 		// output pin
 		sim.stampVoltageSource(0, nodes[1], pins[1].voltSource);
@@ -51,6 +55,7 @@ class VCOElm extends ChipElm {
 	double cCurrent;
 	int cDir;
 
+	@Override
 	void doStep() {
 		double vc = volts[3] - volts[2];
 		double vo = volts[1];
@@ -90,19 +95,23 @@ class VCOElm extends ChipElm {
 		pins[0].current = -pins[4].current;
 	}
 
+	@Override
 	void draw(Graphics g) {
 		computeCurrent();
 		drawChip(g);
 	}
 
+	@Override
 	int getPostCount() {
 		return 6;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 3;
 	}
 
+	@Override
 	int getDumpType() {
 		return 158;
 	}

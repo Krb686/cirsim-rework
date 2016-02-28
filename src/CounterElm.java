@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Checkbox;
 import java.util.StringTokenizer;
 
 class CounterElm extends ChipElm {
@@ -18,18 +18,22 @@ class CounterElm extends ChipElm {
 		pins[1].bubble = invertreset;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + invertreset;
 	}
 
+	@Override
 	boolean needsBits() {
 		return true;
 	}
 
+	@Override
 	String getChipName() {
 		return "Counter";
 	}
 
+	@Override
 	void setupPins() {
 		sizeX = 2;
 		sizeY = bits > 2 ? bits : 2;
@@ -49,12 +53,14 @@ class CounterElm extends ChipElm {
 		allocNodes();
 	}
 
+	@Override
 	int getPostCount() {
 		if (hasEnable())
 			return bits + 3;
 		return bits + 2;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0) {
 			EditInfo ei = new EditInfo("", 0, -1, -1);
@@ -74,6 +80,7 @@ class CounterElm extends ChipElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0) {
 			if (ei.checkbox.getState())
@@ -105,10 +112,12 @@ class CounterElm extends ChipElm {
 		return (flags & FLAG_ENABLE) != 0;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return bits;
 	}
 
+	@Override
 	void execute() {
 		boolean en = true;
 		if (hasEnable())
@@ -132,6 +141,7 @@ class CounterElm extends ChipElm {
 		lastClock = pins[0].value;
 	}
 
+	@Override
 	int getDumpType() {
 		return 164;
 	}

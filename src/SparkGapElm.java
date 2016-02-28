@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class SparkGapElm extends CircuitElm {
@@ -22,20 +24,24 @@ class SparkGapElm extends CircuitElm {
 		holdcurrent = new Double(st.nextToken()).doubleValue();
 	}
 
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
 
+	@Override
 	int getDumpType() {
 		return 187;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + onresistance + " " + offresistance + " " + breakdown + " " + holdcurrent;
 	}
 
 	Polygon arrow1, arrow2;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		int dist = 16;
@@ -47,6 +53,7 @@ class SparkGapElm extends CircuitElm {
 		arrow2 = calcArrow(point2, p1, alen, alen);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		int i;
 		double v1 = volts[0];
@@ -63,16 +70,19 @@ class SparkGapElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	void calculateCurrent() {
 		double vd = volts[0] - volts[1];
 		current = vd / resistance;
 	}
 
+	@Override
 	void reset() {
 		super.reset();
 		state = false;
 	}
 
+	@Override
 	void startIteration() {
 		if (Math.abs(current) < holdcurrent)
 			state = false;
@@ -81,25 +91,29 @@ class SparkGapElm extends CircuitElm {
 			state = true;
 	}
 
+	@Override
 	void doStep() {
 		resistance = (state) ? onresistance : offresistance;
 		sim.stampResistor(nodes[0], nodes[1], resistance);
 	}
 
+	@Override
 	void stamp() {
 		sim.stampNonLinear(nodes[0]);
 		sim.stampNonLinear(nodes[1]);
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "spark gap";
 		getBasicInfo(arr);
 		arr[3] = state ? "on" : "off";
-		arr[4] = "Ron = " + getUnitText(onresistance, sim.ohmString);
-		arr[5] = "Roff = " + getUnitText(offresistance, sim.ohmString);
+		arr[4] = "Ron = " + getUnitText(onresistance, CirSim.ohmString);
+		arr[5] = "Roff = " + getUnitText(offresistance, CirSim.ohmString);
 		arr[6] = "Vbreakdown = " + getUnitText(breakdown, "V");
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		// ohmString doesn't work here on linux
 		if (n == 0)
@@ -113,6 +127,7 @@ class SparkGapElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (ei.value > 0 && n == 0)
 			onresistance = ei.value;

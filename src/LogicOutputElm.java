@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.util.StringTokenizer;
 
 class LogicOutputElm extends CircuitElm {
@@ -22,14 +24,17 @@ class LogicOutputElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + threshold;
 	}
 
+	@Override
 	int getDumpType() {
 		return 'M';
 	}
 
+	@Override
 	int getPostCount() {
 		return 1;
 	}
@@ -46,11 +51,13 @@ class LogicOutputElm extends CircuitElm {
 		return (flags & FLAG_PULLDOWN) != 0;
 	}
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		lead1 = interpPoint(point1, point2, 1 - 12 / dn);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		Font f = new Font("SansSerif", Font.BOLD, 20);
 		g.setFont(f);
@@ -74,15 +81,18 @@ class LogicOutputElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	void stamp() {
 		if (needsPullDown())
 			sim.stampResistor(nodes[0], 0, 1e6);
 	}
 
+	@Override
 	double getVoltageDiff() {
 		return volts[0];
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "logic output";
 		arr[1] = (volts[0] < threshold) ? "low" : "high";
@@ -91,6 +101,7 @@ class LogicOutputElm extends CircuitElm {
 		arr[2] = "V = " + getVoltageText(volts[0]);
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("Threshold", threshold, 10, -10);
@@ -102,6 +113,7 @@ class LogicOutputElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0)
 			threshold = ei.value;
@@ -113,6 +125,7 @@ class LogicOutputElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	int getShortcut() {
 		return 'o';
 	}

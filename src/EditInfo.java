@@ -1,4 +1,7 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.Scrollbar;
+import java.awt.TextField;
 
 class EditInfo {
 	EditInfo(String n, double val, double mn, double mx) {

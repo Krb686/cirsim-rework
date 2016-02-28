@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 class Switch2Elm extends SwitchElm {
@@ -21,10 +23,12 @@ class Switch2Elm extends SwitchElm {
 		noDiagonal = true;
 	}
 
+	@Override
 	int getDumpType() {
 		return 'S';
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + link;
 	}
@@ -32,6 +36,7 @@ class Switch2Elm extends SwitchElm {
 	final int openhs = 16;
 	Point swposts[], swpoles[];
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		calcLeads(32);
@@ -43,6 +48,7 @@ class Switch2Elm extends SwitchElm {
 		posCount = hasCenterOff() ? 3 : 2;
 	}
 
+	@Override
 	void draw(Graphics g) {
 		setBbox(point1, point2, openhs);
 
@@ -70,29 +76,35 @@ class Switch2Elm extends SwitchElm {
 		drawPosts(g);
 	}
 
+	@Override
 	Point getPost(int n) {
 		return (n == 0) ? point1 : swposts[n - 1];
 	}
 
+	@Override
 	int getPostCount() {
 		return 3;
 	}
 
+	@Override
 	void calculateCurrent() {
 		if (position == 2)
 			current = 0;
 	}
 
+	@Override
 	void stamp() {
 		if (position == 2) // in center?
 			return;
 		sim.stampVoltageSource(nodes[0], nodes[position + 1], voltSource, 0);
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return (position == 2) ? 0 : 1;
 	}
 
+	@Override
 	void toggle() {
 		super.toggle();
 		if (link != 0) {
@@ -108,17 +120,20 @@ class Switch2Elm extends SwitchElm {
 		}
 	}
 
+	@Override
 	boolean getConnection(int n1, int n2) {
 		if (position == 2)
 			return false;
 		return comparePair(n1, n2, 0, 1 + position);
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = (link == 0) ? "switch (SPDT)" : "switch (DPDT)";
 		arr[1] = "I = " + getCurrentDText(getCurrent());
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 1) {
 			EditInfo ei = new EditInfo("", 0, -1, -1);
@@ -128,6 +143,7 @@ class Switch2Elm extends SwitchElm {
 		return super.getEditInfo(n);
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 1) {
 			flags &= ~FLAG_CENTER_OFF;
@@ -144,6 +160,7 @@ class Switch2Elm extends SwitchElm {
 		return (flags & FLAG_CENTER_OFF) != 0;
 	}
 
+	@Override
 	int getShortcut() {
 		return 'S';
 	}

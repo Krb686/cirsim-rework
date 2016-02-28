@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
@@ -24,10 +26,12 @@ class TriStateElm extends CircuitElm {
 
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + r_on + " " + r_off;
 	}
 
+	@Override
 	int getDumpType() {
 		return 180;
 	}
@@ -38,6 +42,7 @@ class TriStateElm extends CircuitElm {
 
 	Polygon gatePoly;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		calcLeads(32);
@@ -57,6 +62,7 @@ class TriStateElm extends CircuitElm {
 		lead3 = interpPoint(point1, point2, .5, -hs / 2);
 	}
 
+	@Override
 	void drawPosts(Graphics g) {
 		int i;
 		for (i = 0; i != 3; i++) {
@@ -65,6 +71,7 @@ class TriStateElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	void draw(Graphics g) {
 		int hs = 16;
 		setBbox(point1, point2, hs);
@@ -79,21 +86,25 @@ class TriStateElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	void calculateCurrent() {
 		current = (volts[0] - volts[1]) / resistance;
 	}
 
 	// we need this to be able to change the matrix for each step
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
 
+	@Override
 	void stamp() {
 		sim.stampVoltageSource(0, nodes[3], voltSource);
 		sim.stampNonLinear(nodes[3]);
 		sim.stampNonLinear(nodes[1]);
 	}
 
+	@Override
 	void doStep() {
 		open = (volts[2] < 2.5);
 		resistance = (open) ? r_off : r_on;
@@ -101,6 +112,7 @@ class TriStateElm extends CircuitElm {
 		sim.updateVoltageSource(0, nodes[3], voltSource, volts[0] > 2.5 ? 5 : 0);
 	}
 
+	@Override
 	void drag(int xx, int yy) {
 		xx = sim.snapGrid(xx);
 		yy = sim.snapGrid(yy);
@@ -117,20 +129,24 @@ class TriStateElm extends CircuitElm {
 		setPoints();
 	}
 
+	@Override
 	int getPostCount() {
 		return 4;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
 
+	@Override
 	Point getPost(int n) {
 		if (point4 == null)
 			System.out.print("Hello\n");
 		return (n == 0) ? point1 : (n == 1) ? point2 : (n == 2) ? point3 : point4;
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "tri-state buffer";
 		arr[1] = open ? "open" : "closed";
@@ -145,12 +161,14 @@ class TriStateElm extends CircuitElm {
 	// /
 	// 2
 
+	@Override
 	boolean getConnection(int n1, int n2) {
 		if ((n1 == 1 && n2 == 3) || (n1 == 3 && n2 == 1))
 			return true;
 		return false;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 
 		if (n == 0)
@@ -160,6 +178,7 @@ class TriStateElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 
 		if (n == 0 && ei.value > 0)

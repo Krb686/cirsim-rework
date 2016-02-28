@@ -1,4 +1,5 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 class AnalogSwitch2Elm extends AnalogSwitchElm {
@@ -13,6 +14,7 @@ class AnalogSwitch2Elm extends AnalogSwitchElm {
 	final int openhs = 16;
 	Point swposts[], swpoles[], ctlPoint;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		calcLeads(32);
@@ -23,10 +25,12 @@ class AnalogSwitch2Elm extends AnalogSwitchElm {
 		ctlPoint = interpPoint(point1, point2, .5, openhs);
 	}
 
+	@Override
 	int getPostCount() {
 		return 4;
 	}
 
+	@Override
 	void draw(Graphics g) {
 		setBbox(point1, point2, openhs);
 
@@ -53,14 +57,17 @@ class AnalogSwitch2Elm extends AnalogSwitchElm {
 		drawPosts(g);
 	}
 
+	@Override
 	Point getPost(int n) {
 		return (n == 0) ? point1 : (n == 3) ? ctlPoint : swposts[n - 1];
 	}
 
+	@Override
 	int getDumpType() {
 		return 160;
 	}
 
+	@Override
 	void calculateCurrent() {
 		if (open)
 			current = (volts[0] - volts[2]) / r_on;
@@ -68,12 +75,14 @@ class AnalogSwitch2Elm extends AnalogSwitchElm {
 			current = (volts[0] - volts[1]) / r_on;
 	}
 
+	@Override
 	void stamp() {
 		sim.stampNonLinear(nodes[0]);
 		sim.stampNonLinear(nodes[1]);
 		sim.stampNonLinear(nodes[2]);
 	}
 
+	@Override
 	void doStep() {
 		open = (volts[3] < 2.5);
 		if ((flags & FLAG_INVERT) != 0)
@@ -87,12 +96,14 @@ class AnalogSwitch2Elm extends AnalogSwitchElm {
 		}
 	}
 
+	@Override
 	boolean getConnection(int n1, int n2) {
 		if (n1 == 3 || n2 == 3)
 			return false;
 		return true;
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "analog switch (SPDT)";
 		arr[1] = "I = " + getCurrentDText(getCurrent());

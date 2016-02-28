@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 class TransformerElm extends CircuitElm {
@@ -36,6 +38,7 @@ class TransformerElm extends CircuitElm {
 		noDiagonal = true;
 	}
 
+	@Override
 	void drag(int xx, int yy) {
 		xx = sim.snapGrid(xx);
 		yy = sim.snapGrid(yy);
@@ -47,10 +50,12 @@ class TransformerElm extends CircuitElm {
 		setPoints();
 	}
 
+	@Override
 	int getDumpType() {
 		return 'T';
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + inductance + " " + ratio + " " + current[0] + " " + current[1] + " " + couplingCoef;
 	}
@@ -59,6 +64,7 @@ class TransformerElm extends CircuitElm {
 		return (flags & FLAG_BACK_EULER) == 0;
 	}
 
+	@Override
 	void draw(Graphics g) {
 		int i;
 		for (i = 0; i != 4; i++) {
@@ -84,6 +90,7 @@ class TransformerElm extends CircuitElm {
 		setBbox(ptEnds[0], ptEnds[3], 0);
 	}
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		point2.y = point1.y;
@@ -105,20 +112,24 @@ class TransformerElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	Point getPost(int n) {
 		return ptEnds[n];
 	}
 
+	@Override
 	int getPostCount() {
 		return 4;
 	}
 
+	@Override
 	void reset() {
 		current[0] = current[1] = volts[0] = volts[1] = volts[2] = volts[3] = curcount[0] = curcount[1] = 0;
 	}
 
 	double a1, a2, a3, a4;
 
+	@Override
 	void stamp() {
 		// equations for transformer:
 		// v1 = L1 di1/dt + M di2/dt
@@ -167,6 +178,7 @@ class TransformerElm extends CircuitElm {
 		sim.stampRightSide(nodes[3]);
 	}
 
+	@Override
 	void startIteration() {
 		double voltdiff1 = volts[0] - volts[2];
 		double voltdiff2 = volts[1] - volts[3];
@@ -181,11 +193,13 @@ class TransformerElm extends CircuitElm {
 
 	double curSourceValue1, curSourceValue2;
 
+	@Override
 	void doStep() {
 		sim.stampCurrentSource(nodes[0], nodes[2], curSourceValue1);
 		sim.stampCurrentSource(nodes[1], nodes[3], curSourceValue2);
 	}
 
+	@Override
 	void calculateCurrent() {
 		double voltdiff1 = volts[0] - volts[2];
 		double voltdiff2 = volts[1] - volts[3];
@@ -193,6 +207,7 @@ class TransformerElm extends CircuitElm {
 		current[1] = voltdiff1 * a3 + voltdiff2 * a4 + curSourceValue2;
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "transformer";
 		arr[1] = "L = " + getUnitText(inductance, "H");
@@ -203,6 +218,7 @@ class TransformerElm extends CircuitElm {
 		arr[6] = "I2 = " + getCurrentText(current[1]);
 	}
 
+	@Override
 	boolean getConnection(int n1, int n2) {
 		if (comparePair(n1, n2, 0, 2))
 			return true;
@@ -211,6 +227,7 @@ class TransformerElm extends CircuitElm {
 		return false;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("Primary Inductance (H)", inductance, .01, 5);
@@ -226,6 +243,7 @@ class TransformerElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0)
 			inductance = ei.value;

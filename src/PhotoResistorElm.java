@@ -3,7 +3,10 @@
 // FIXME need to uncomment PhotoResistorElm line from CirSim.java
 // FIXME need to add PhotoResistorElm.java to srclist
 
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Label;
+import java.awt.Point;
+import java.awt.Scrollbar;
 import java.util.StringTokenizer;
 
 class PhotoResistorElm extends CircuitElm {
@@ -26,14 +29,17 @@ class PhotoResistorElm extends CircuitElm {
 		createSlider();
 	}
 
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
 
+	@Override
 	int getDumpType() {
 		return 190;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + minresistance + " " + maxresistance;
 	}
@@ -41,12 +47,13 @@ class PhotoResistorElm extends CircuitElm {
 	Point ps3, ps4;
 
 	void createSlider() {
-		sim.main.add(label = new Label("Light Level", Label.CENTER));
+		CirSim.main.add(label = new Label("Light Level", Label.CENTER));
 		int value = 50;
-		sim.main.add(slider = new Scrollbar(Scrollbar.HORIZONTAL, value, 1, 0, 101));
-		sim.main.validate();
+		CirSim.main.add(slider = new Scrollbar(Scrollbar.HORIZONTAL, value, 1, 0, 101));
+		CirSim.main.validate();
 	}
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		calcLeads(32);
@@ -54,11 +61,13 @@ class PhotoResistorElm extends CircuitElm {
 		ps4 = new Point();
 	}
 
+	@Override
 	void delete() {
-		sim.main.remove(label);
-		sim.main.remove(slider);
+		CirSim.main.remove(label);
+		CirSim.main.remove(slider);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		int i;
 		double v1 = volts[0];
@@ -71,11 +80,13 @@ class PhotoResistorElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	void calculateCurrent() {
 		double vd = volts[0] - volts[1];
 		current = vd / resistance;
 	}
 
+	@Override
 	void startIteration() {
 		double vd = volts[0] - volts[1];
 		// FIXME set resistance as appropriate, using slider.getValue()
@@ -83,24 +94,28 @@ class PhotoResistorElm extends CircuitElm {
 		// System.out.print(this + " res current set to " + current + "\n");
 	}
 
+	@Override
 	void doStep() {
 		sim.stampResistor(nodes[0], nodes[1], resistance);
 	}
 
+	@Override
 	void stamp() {
 		sim.stampNonLinear(nodes[0]);
 		sim.stampNonLinear(nodes[1]);
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		// FIXME
 		arr[0] = "spark gap";
 		getBasicInfo(arr);
-		arr[3] = "R = " + getUnitText(resistance, sim.ohmString);
-		arr[4] = "Ron = " + getUnitText(minresistance, sim.ohmString);
-		arr[5] = "Roff = " + getUnitText(maxresistance, sim.ohmString);
+		arr[3] = "R = " + getUnitText(resistance, CirSim.ohmString);
+		arr[4] = "Ron = " + getUnitText(minresistance, CirSim.ohmString);
+		arr[5] = "Roff = " + getUnitText(maxresistance, CirSim.ohmString);
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		// ohmString doesn't work here on linux
 		if (n == 0)
@@ -110,6 +125,7 @@ class PhotoResistorElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (ei.value > 0 && n == 0)
 			minresistance = ei.value;

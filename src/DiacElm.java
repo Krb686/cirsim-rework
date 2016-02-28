@@ -3,7 +3,8 @@
 // FIXME need to add DiacElm.java to srclist
 // FIXME need to uncomment DiacElm line from CirSim.java
 
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 class DiacElm extends CircuitElm {
@@ -28,20 +29,24 @@ class DiacElm extends CircuitElm {
 		holdcurrent = new Double(st.nextToken()).doubleValue();
 	}
 
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
 
+	@Override
 	int getDumpType() {
 		return 203;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + onresistance + " " + offresistance + " " + breakdown + " " + holdcurrent;
 	}
 
 	Point ps3, ps4;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		calcLeads(32);
@@ -49,6 +54,7 @@ class DiacElm extends CircuitElm {
 		ps4 = new Point();
 	}
 
+	@Override
 	void draw(Graphics g) {
 		// FIXME need to draw Diac
 		int i;
@@ -61,6 +67,7 @@ class DiacElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	void calculateCurrent() {
 		double vd = volts[0] - volts[1];
 		if (state)
@@ -69,6 +76,7 @@ class DiacElm extends CircuitElm {
 			current = vd / offresistance;
 	}
 
+	@Override
 	void startIteration() {
 		double vd = volts[0] - volts[1];
 		if (Math.abs(current) < holdcurrent)
@@ -78,6 +86,7 @@ class DiacElm extends CircuitElm {
 		// System.out.print(this + " res current set to " + current + "\n");
 	}
 
+	@Override
 	void doStep() {
 		if (state)
 			sim.stampResistor(nodes[0], nodes[1], onresistance);
@@ -85,22 +94,25 @@ class DiacElm extends CircuitElm {
 			sim.stampResistor(nodes[0], nodes[1], offresistance);
 	}
 
+	@Override
 	void stamp() {
 		sim.stampNonLinear(nodes[0]);
 		sim.stampNonLinear(nodes[1]);
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		// FIXME
 		arr[0] = "spark gap";
 		getBasicInfo(arr);
 		arr[3] = state ? "on" : "off";
-		arr[4] = "Ron = " + getUnitText(onresistance, sim.ohmString);
-		arr[5] = "Roff = " + getUnitText(offresistance, sim.ohmString);
+		arr[4] = "Ron = " + getUnitText(onresistance, CirSim.ohmString);
+		arr[5] = "Roff = " + getUnitText(offresistance, CirSim.ohmString);
 		arr[6] = "Vbrkdn = " + getUnitText(breakdown, "V");
 		arr[7] = "Ihold = " + getUnitText(holdcurrent, "A");
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("On resistance (ohms)", onresistance, 0, 0);
@@ -113,6 +125,7 @@ class DiacElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (ei.value > 0 && n == 0)
 			onresistance = ei.value;

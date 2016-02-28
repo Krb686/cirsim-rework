@@ -1,4 +1,8 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class TransistorElm extends CircuitElm {
@@ -37,19 +41,23 @@ class TransistorElm extends CircuitElm {
 		noDiagonal = true;
 	}
 
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
 
+	@Override
 	void reset() {
 		volts[0] = volts[1] = volts[2] = 0;
 		lastvbc = lastvbe = curcount_c = curcount_e = curcount_b = 0;
 	}
 
+	@Override
 	int getDumpType() {
 		return 't';
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + pnp + " " + (volts[0] - volts[1]) + " " + (volts[0] - volts[2]) + " " + beta;
 	}
@@ -57,6 +65,7 @@ class TransistorElm extends CircuitElm {
 	double ic, ie, ib, curcount_c, curcount_e, curcount_b;
 	Polygon rectPoly, arrowPoly;
 
+	@Override
 	void draw(Graphics g) {
 		setBbox(point1, point2, 16);
 		setPowerColor(g, true);
@@ -100,20 +109,24 @@ class TransistorElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	Point getPost(int n) {
 		return (n == 0) ? point1 : (n == 1) ? coll[0] : emit[0];
 	}
 
+	@Override
 	int getPostCount() {
 		return 3;
 	}
 
+	@Override
 	double getPower() {
 		return (volts[0] - volts[2]) * ib + (volts[1] - volts[2]) * ic;
 	}
 
 	Point rect[], coll[], emit[], base;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		int hs = 16;
@@ -174,12 +187,14 @@ class TransistorElm extends CircuitElm {
 		return (vnew);
 	}
 
+	@Override
 	void stamp() {
 		sim.stampNonLinear(nodes[0]);
 		sim.stampNonLinear(nodes[1]);
 		sim.stampNonLinear(nodes[2]);
 	}
 
+	@Override
 	void doStep() {
 		double vbc = volts[0] - volts[1]; // typically negative
 		double vbe = volts[0] - volts[2]; // typically positive
@@ -250,6 +265,7 @@ class TransistorElm extends CircuitElm {
 		sim.stampRightSide(nodes[2], -ie + gee * vbe + gec * vbc);
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "transistor (" + ((pnp == -1) ? "PNP)" : "NPN)") + " beta=" + showFormat.format(beta);
 		double vbc = volts[0] - volts[1];
@@ -266,6 +282,7 @@ class TransistorElm extends CircuitElm {
 		arr[6] = "Vce = " + getVoltageText(vce);
 	}
 
+	@Override
 	double getScopeValue(int x) {
 		switch (x) {
 		case Scope.VAL_IB:
@@ -284,6 +301,7 @@ class TransistorElm extends CircuitElm {
 		return 0;
 	}
 
+	@Override
 	String getScopeUnits(int x) {
 		switch (x) {
 		case Scope.VAL_IB:
@@ -295,6 +313,7 @@ class TransistorElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("Beta/hFE", beta, 10, 1000).setDimensionless();
@@ -306,6 +325,7 @@ class TransistorElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0) {
 			beta = ei.value;
@@ -320,6 +340,7 @@ class TransistorElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	boolean canViewInScope() {
 		return true;
 	}

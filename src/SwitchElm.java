@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 class SwitchElm extends CircuitElm {
@@ -33,16 +35,19 @@ class SwitchElm extends CircuitElm {
 		posCount = 2;
 	}
 
+	@Override
 	int getDumpType() {
 		return 's';
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + position + " " + momentary;
 	}
 
 	Point ps, ps2;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		calcLeads(32);
@@ -50,6 +55,7 @@ class SwitchElm extends CircuitElm {
 		ps2 = new Point();
 	}
 
+	@Override
 	void draw(Graphics g) {
 		int openhs = 16;
 		int hs1 = (position == 1) ? 0 : 2;
@@ -70,16 +76,19 @@ class SwitchElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	void calculateCurrent() {
 		if (position == 1)
 			current = 0;
 	}
 
+	@Override
 	void stamp() {
 		if (position == 0)
 			sim.stampVoltageSource(nodes[0], nodes[1], voltSource, 0);
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return (position == 1) ? 0 : 1;
 	}
@@ -95,6 +104,7 @@ class SwitchElm extends CircuitElm {
 			position = 0;
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = (momentary) ? "push switch (SPST)" : "switch (SPST)";
 		if (position == 1) {
@@ -107,14 +117,17 @@ class SwitchElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	boolean getConnection(int n1, int n2) {
 		return position == 0;
 	}
 
+	@Override
 	boolean isWire() {
 		return true;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0) {
 			EditInfo ei = new EditInfo("", 0, -1, -1);
@@ -124,11 +137,13 @@ class SwitchElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0)
 			momentary = ei.checkbox.getState();
 	}
 
+	@Override
 	int getShortcut() {
 		return 's';
 	}

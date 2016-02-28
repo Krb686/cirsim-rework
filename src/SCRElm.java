@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 // Silicon-Controlled Rectifier
@@ -49,20 +51,24 @@ class SCRElm extends CircuitElm {
 		diode.setup(.8, 0);
 	}
 
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
 
+	@Override
 	void reset() {
 		volts[anode] = volts[cnode] = volts[gnode] = 0;
 		diode.reset();
 		lastvag = lastvac = curcount_a = curcount_c = curcount_g = 0;
 	}
 
+	@Override
 	int getDumpType() {
 		return 177;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + (volts[anode] - volts[cnode]) + " " + (volts[anode] - volts[gnode]) + " " + triggerI
 				+ " " + holdingI + " " + cresistance;
@@ -76,6 +82,7 @@ class SCRElm extends CircuitElm {
 	Polygon poly;
 	Point cathode[], gate[];
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		int dir = 0;
@@ -108,6 +115,7 @@ class SCRElm extends CircuitElm {
 		interpPoint(lead2, point2, gate[1], gatelen / leadlen, sim.gridSize * 2 * dir);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		setBbox(point1, point2, hs);
 		adjustBbox(gate[0], gate[1]);
@@ -141,24 +149,29 @@ class SCRElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	Point getPost(int n) {
 		return (n == 0) ? point1 : (n == 1) ? point2 : gate[1];
 	}
 
+	@Override
 	int getPostCount() {
 		return 3;
 	}
 
+	@Override
 	int getInternalNodeCount() {
 		return 1;
 	}
 
+	@Override
 	double getPower() {
 		return (volts[anode] - volts[gnode]) * ia + (volts[cnode] - volts[gnode]) * ic;
 	}
 
 	double aresistance;
 
+	@Override
 	void stamp() {
 		sim.stampNonLinear(nodes[anode]);
 		sim.stampNonLinear(nodes[cnode]);
@@ -168,6 +181,7 @@ class SCRElm extends CircuitElm {
 		diode.stamp(nodes[inode], nodes[gnode]);
 	}
 
+	@Override
 	void doStep() {
 		double vac = volts[anode] - volts[cnode]; // typically negative
 		double vag = volts[anode] - volts[gnode]; // typically positive
@@ -186,6 +200,7 @@ class SCRElm extends CircuitElm {
 		sim.stampResistor(nodes[anode], nodes[inode], aresistance);
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "SCR";
 		double vac = volts[anode] - volts[cnode];
@@ -198,12 +213,14 @@ class SCRElm extends CircuitElm {
 		arr[5] = "Vgc = " + getVoltageText(vgc);
 	}
 
+	@Override
 	void calculateCurrent() {
 		ic = (volts[cnode] - volts[gnode]) / cresistance;
 		ia = (volts[anode] - volts[inode]) / aresistance;
 		ig = -ic - ia;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		// ohmString doesn't work here on linux
 		if (n == 0)
@@ -215,6 +232,7 @@ class SCRElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0 && ei.value > 0)
 			triggerI = ei.value;

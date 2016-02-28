@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
@@ -12,10 +14,12 @@ class SchmittElm extends InvertingSchmittElm {
 		super(xa, ya, xb, yb, f, st);
 	}
 
+	@Override
 	int getDumpType() {
 		return 182;
 	}
 
+	@Override
 	void doStep() {
 		double v0 = volts[1];
 		double out;
@@ -44,6 +48,7 @@ class SchmittElm extends InvertingSchmittElm {
 		sim.updateVoltageSource(0, nodes[1], voltSource, out);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		drawPosts(g);
 		draw2Leads(g);
@@ -57,6 +62,7 @@ class SchmittElm extends InvertingSchmittElm {
 	Polygon gatePoly;
 	Polygon symbolPoly;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		int hs = 16;
@@ -85,6 +91,7 @@ class SchmittElm extends InvertingSchmittElm {
 		setBbox(point1, point2, hs);
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "Schmitt";
 	}

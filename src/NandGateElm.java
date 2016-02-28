@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.StringTokenizer;
 
 class NandGateElm extends AndGateElm {
@@ -10,18 +9,22 @@ class NandGateElm extends AndGateElm {
 		super(xa, ya, xb, yb, f, st);
 	}
 
+	@Override
 	boolean isInverting() {
 		return true;
 	}
 
+	@Override
 	String getGateName() {
 		return "NAND gate";
 	}
 
+	@Override
 	int getDumpType() {
 		return 151;
 	}
 
+	@Override
 	int getShortcut() {
 		return '@';
 	}

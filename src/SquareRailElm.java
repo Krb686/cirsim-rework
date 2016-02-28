@@ -3,10 +3,12 @@ class SquareRailElm extends RailElm {
 		super(xx, yy, WF_SQUARE);
 	}
 
+	@Override
 	Class getDumpClass() {
 		return RailElm.class;
 	}
 
+	@Override
 	int getShortcut() {
 		return 0;
 	}

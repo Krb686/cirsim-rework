@@ -1,6 +1,10 @@
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -22,6 +26,7 @@ class ImportExportFileDialog implements ImportExportDialog {
 		cframe = f;
 	}
 
+	@Override
 	public void setDump(String dump) {
 		circuitDump = dump;
 	}
@@ -30,6 +35,7 @@ class ImportExportFileDialog implements ImportExportDialog {
 		return circuitDump;
 	}
 
+	@Override
 	public void execute() {
 		FileDialog fd = new FileDialog(new Frame(), (type == Action.EXPORT) ? "Save File" : "Open File",
 				(type == Action.EXPORT) ? FileDialog.SAVE : FileDialog.LOAD);

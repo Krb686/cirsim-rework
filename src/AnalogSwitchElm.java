@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 class AnalogSwitchElm extends CircuitElm {
@@ -23,10 +25,12 @@ class AnalogSwitchElm extends CircuitElm {
 
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + r_on + " " + r_off;
 	}
 
+	@Override
 	int getDumpType() {
 		return 159;
 	}
@@ -35,6 +39,7 @@ class AnalogSwitchElm extends CircuitElm {
 
 	Point ps, point3, lead3;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		calcLeads(32);
@@ -44,6 +49,7 @@ class AnalogSwitchElm extends CircuitElm {
 		lead3 = interpPoint(point1, point2, .5, -openhs / 2);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		int openhs = 16;
 		int hs = (open) ? openhs : 0;
@@ -63,20 +69,24 @@ class AnalogSwitchElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	void calculateCurrent() {
 		current = (volts[0] - volts[1]) / resistance;
 	}
 
 	// we need this to be able to change the matrix for each step
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
 
+	@Override
 	void stamp() {
 		sim.stampNonLinear(nodes[0]);
 		sim.stampNonLinear(nodes[1]);
 	}
 
+	@Override
 	void doStep() {
 		open = (volts[2] < 2.5);
 		if ((flags & FLAG_INVERT) != 0)
@@ -85,6 +95,7 @@ class AnalogSwitchElm extends CircuitElm {
 		sim.stampResistor(nodes[0], nodes[1], resistance);
 	}
 
+	@Override
 	void drag(int xx, int yy) {
 		xx = sim.snapGrid(xx);
 		yy = sim.snapGrid(yy);
@@ -101,14 +112,17 @@ class AnalogSwitchElm extends CircuitElm {
 		setPoints();
 	}
 
+	@Override
 	int getPostCount() {
 		return 3;
 	}
 
+	@Override
 	Point getPost(int n) {
 		return (n == 0) ? point1 : (n == 1) ? point2 : point3;
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "analog switch";
 		arr[1] = open ? "open" : "closed";
@@ -119,12 +133,14 @@ class AnalogSwitchElm extends CircuitElm {
 
 	// we have to just assume current will flow either way, even though that
 	// might cause singular matrix errors
+	@Override
 	boolean getConnection(int n1, int n2) {
 		if (n1 == 2 || n2 == 2)
 			return false;
 		return true;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0) {
 			EditInfo ei = new EditInfo("", 0, -1, -1);
@@ -138,6 +154,7 @@ class AnalogSwitchElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0)
 			flags = (ei.checkbox.getState()) ? (flags | FLAG_INVERT) : (flags & ~FLAG_INVERT);

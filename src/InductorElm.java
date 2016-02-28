@@ -1,4 +1,5 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Graphics;
 import java.util.StringTokenizer;
 
 class InductorElm extends CircuitElm {
@@ -20,19 +21,23 @@ class InductorElm extends CircuitElm {
 		ind.setup(inductance, current, flags);
 	}
 
+	@Override
 	int getDumpType() {
 		return 'l';
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + inductance + " " + current;
 	}
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		calcLeads(32);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		double v1 = volts[0];
 		double v2 = volts[1];
@@ -50,33 +55,40 @@ class InductorElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	void reset() {
 		current = volts[0] = volts[1] = curcount = 0;
 		ind.reset();
 	}
 
+	@Override
 	void stamp() {
 		ind.stamp(nodes[0], nodes[1]);
 	}
 
+	@Override
 	void startIteration() {
 		ind.startIteration(volts[0] - volts[1]);
 	}
 
+	@Override
 	boolean nonLinear() {
 		return ind.nonLinear();
 	}
 
+	@Override
 	void calculateCurrent() {
 		double voltdiff = volts[0] - volts[1];
 		current = ind.calculateCurrent(voltdiff);
 	}
 
+	@Override
 	void doStep() {
 		double voltdiff = volts[0] - volts[1];
 		ind.doStep(voltdiff);
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "inductor";
 		getBasicInfo(arr);
@@ -84,6 +96,7 @@ class InductorElm extends CircuitElm {
 		arr[4] = "P = " + getUnitText(getPower(), "W");
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("Inductance (H)", inductance, 0, 0);
@@ -95,6 +108,7 @@ class InductorElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0)
 			inductance = ei.value;

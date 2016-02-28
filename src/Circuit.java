@@ -1,24 +1,10 @@
 
 // Circuit.java (c) 2005,2008 by Paul Falstad, www.falstad.com
 
-import java.io.InputStream;
-import java.awt.*;
-import java.awt.image.*;
 import java.applet.Applet;
-import java.util.Vector;
-import java.io.File;
-import java.util.Random;
-import java.util.Arrays;
-import java.lang.Math;
-import java.net.URL;
-import java.awt.event.*;
-import java.io.FilterInputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.StringTokenizer;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
+import java.awt.Graphics;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 
 public class Circuit extends Applet implements ComponentListener {
 	static CirSim ogf;
@@ -34,6 +20,7 @@ public class Circuit extends Applet implements ComponentListener {
 
 	boolean started = false;
 
+	@Override
 	public void init() {
 		addComponentListener(this);
 	}
@@ -68,6 +55,7 @@ public class Circuit extends Applet implements ComponentListener {
 		ogf.toggleSwitch(x);
 	}
 
+	@Override
 	public void paint(Graphics g) {
 		String s = "Applet is open in a separate window.";
 		if (ogf != null && !ogf.isVisible())
@@ -81,21 +69,26 @@ public class Circuit extends Applet implements ComponentListener {
 		g.drawString(s, 10, 30);
 	}
 
+	@Override
 	public void componentHidden(ComponentEvent e) {
 	}
 
+	@Override
 	public void componentMoved(ComponentEvent e) {
 	}
 
+	@Override
 	public void componentShown(ComponentEvent e) {
 		showFrame();
 	}
 
+	@Override
 	public void componentResized(ComponentEvent e) {
 		if (ogf != null)
 			ogf.componentResized(e);
 	}
 
+	@Override
 	public void destroy() {
 		if (ogf != null)
 			ogf.dispose();

@@ -1,4 +1,7 @@
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
@@ -30,10 +33,12 @@ class FMElm extends CircuitElm {
 		reset();
 	}
 
+	@Override
 	int getDumpType() {
 		return 201;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + carrierfreq + " " + signalfreq + " " + maxVoltage + " " + deviation;
 	}
@@ -42,19 +47,23 @@ class FMElm extends CircuitElm {
 	 * "v current set to " + c + "\n"); }
 	 */
 
+	@Override
 	void reset() {
 		freqTimeZero = 0;
 		curcount = 0;
 	}
 
+	@Override
 	int getPostCount() {
 		return 1;
 	}
 
+	@Override
 	void stamp() {
 		sim.stampVoltageSource(0, nodes[0], voltSource);
 	}
 
+	@Override
 	void doStep() {
 		sim.updateVoltageSource(0, nodes[0], voltSource, getVoltage());
 	}
@@ -70,6 +79,7 @@ class FMElm extends CircuitElm {
 
 	final int circleSize = 17;
 
+	@Override
 	void draw(Graphics g) {
 		setBbox(point1, point2, circleSize);
 		setVoltageColor(g, volts[0]);
@@ -99,27 +109,33 @@ class FMElm extends CircuitElm {
 		adjustBbox(xc - circleSize, yc - circleSize, xc + circleSize, yc + circleSize);
 	}
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		lead1 = interpPoint(point1, point2, 1 - circleSize / dn);
 	}
 
+	@Override
 	double getVoltageDiff() {
 		return volts[0];
 	}
 
+	@Override
 	boolean hasGroundConnection(int n1) {
 		return true;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
 
+	@Override
 	double getPower() {
 		return -getVoltageDiff() * current;
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 
 		arr[0] = "FM Source";
@@ -131,6 +147,7 @@ class FMElm extends CircuitElm {
 		arr[6] = "Vmax = " + getVoltageText(maxVoltage);
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("Max Voltage", maxVoltage, -20, 20);
@@ -144,6 +161,7 @@ class FMElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0)
 			maxVoltage = ei.value;

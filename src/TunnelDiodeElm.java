@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class TunnelDiodeElm extends CircuitElm {
@@ -12,6 +14,7 @@ class TunnelDiodeElm extends CircuitElm {
 		setup();
 	}
 
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
@@ -19,6 +22,7 @@ class TunnelDiodeElm extends CircuitElm {
 	void setup() {
 	}
 
+	@Override
 	int getDumpType() {
 		return 175;
 	}
@@ -27,6 +31,7 @@ class TunnelDiodeElm extends CircuitElm {
 	Polygon poly;
 	Point cathode[];
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		calcLeads(16);
@@ -38,6 +43,7 @@ class TunnelDiodeElm extends CircuitElm {
 		poly = createPolygon(pa[0], pa[1], lead2);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		setBbox(point1, point2, hs);
 
@@ -61,6 +67,7 @@ class TunnelDiodeElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	void reset() {
 		lastvoltdiff = volts[0] = volts[1] = curcount = 0;
 	}
@@ -78,6 +85,7 @@ class TunnelDiodeElm extends CircuitElm {
 		return vnew;
 	}
 
+	@Override
 	void stamp() {
 		sim.stampNonLinear(nodes[0]);
 		sim.stampNonLinear(nodes[1]);
@@ -90,6 +98,7 @@ class TunnelDiodeElm extends CircuitElm {
 	static final double pvpp = .525;
 	static final double piv = 370e-6;
 
+	@Override
 	void doStep() {
 		double voltdiff = volts[0] - volts[1];
 		if (Math.abs(voltdiff - lastvoltdiff) > .01)
@@ -110,12 +119,14 @@ class TunnelDiodeElm extends CircuitElm {
 		sim.stampCurrentSource(nodes[0], nodes[1], nc);
 	}
 
+	@Override
 	void calculateCurrent() {
 		double voltdiff = volts[0] - volts[1];
 		current = pip * Math.exp(-pvpp / pvt) * (Math.exp(voltdiff / pvt) - 1)
 				+ pip * (voltdiff / pvp) * Math.exp(1 - voltdiff / pvp) + piv * Math.exp(voltdiff - pvv);
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "tunnel diode";
 		arr[1] = "I = " + getCurrentText(getCurrent());

@@ -1,4 +1,7 @@
-import java.awt.*;
+import java.awt.Choice;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 class VoltageElm extends CircuitElm {
@@ -44,10 +47,12 @@ class VoltageElm extends CircuitElm {
 		reset();
 	}
 
+	@Override
 	int getDumpType() {
 		return 'v';
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + waveform + " " + frequency + " " + maxVoltage + " " + bias + " " + phaseShift + " "
 				+ dutyCycle;
@@ -57,6 +62,7 @@ class VoltageElm extends CircuitElm {
 	 * "v current set to " + c + "\n"); }
 	 */
 
+	@Override
 	void reset() {
 		freqTimeZero = 0;
 		curcount = 0;
@@ -68,6 +74,7 @@ class VoltageElm extends CircuitElm {
 		return 1 - (x - pi) * (2 / pi);
 	}
 
+	@Override
 	void stamp() {
 		if (waveform == WF_DC)
 			sim.stampVoltageSource(nodes[0], nodes[1], voltSource, getVoltage());
@@ -75,6 +82,7 @@ class VoltageElm extends CircuitElm {
 			sim.stampVoltageSource(nodes[0], nodes[1], voltSource);
 	}
 
+	@Override
 	void doStep() {
 		if (waveform != WF_DC)
 			sim.updateVoltageSource(nodes[0], nodes[1], voltSource, getVoltage());
@@ -102,11 +110,13 @@ class VoltageElm extends CircuitElm {
 
 	final int circleSize = 17;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		calcLeads((waveform == WF_DC || waveform == WF_VAR) ? 8 : circleSize * 2);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		setBbox(x, y, x2, y2);
 		draw2Leads(g);
@@ -200,18 +210,22 @@ class VoltageElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
 
+	@Override
 	double getPower() {
 		return -getVoltageDiff() * current;
 	}
 
+	@Override
 	double getVoltageDiff() {
 		return volts[1] - volts[0];
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		switch (waveform) {
 		case WF_DC:
@@ -248,6 +262,7 @@ class VoltageElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo(waveform == WF_DC ? "Voltage" : "Max Voltage", maxVoltage, -20, 20);
@@ -276,6 +291,7 @@ class VoltageElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0)
 			maxVoltage = ei.value;

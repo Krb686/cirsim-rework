@@ -1,4 +1,9 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 abstract class ChipElm extends CircuitElm {
@@ -47,6 +52,7 @@ abstract class ChipElm extends CircuitElm {
 
 	abstract void setupPins();
 
+	@Override
 	void draw(Graphics g) {
 		drawChip(g);
 	}
@@ -92,6 +98,7 @@ abstract class ChipElm extends CircuitElm {
 	int sizeX, sizeY;
 	boolean lastClock;
 
+	@Override
 	void drag(int xx, int yy) {
 		yy = sim.snapGrid(yy);
 		if (xx < x) {
@@ -104,6 +111,7 @@ abstract class ChipElm extends CircuitElm {
 		setPoints();
 	}
 
+	@Override
 	void setPoints() {
 		if (x2 - x > sizeX * cspc2 && this == sim.dragElm)
 			setSize(2);
@@ -137,12 +145,15 @@ abstract class ChipElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	Point getPost(int n) {
 		return pins[n].post;
 	}
 
+	@Override
 	abstract int getVoltageSourceCount(); // output count
 
+	@Override
 	void setVoltageSource(int j, int vs) {
 		int i;
 		for (i = 0; i != getPostCount(); i++) {
@@ -155,6 +166,7 @@ abstract class ChipElm extends CircuitElm {
 		System.out.println("setVoltageSource failed for " + this);
 	}
 
+	@Override
 	void stamp() {
 		int i;
 		for (i = 0; i != getPostCount(); i++) {
@@ -167,6 +179,7 @@ abstract class ChipElm extends CircuitElm {
 	void execute() {
 	}
 
+	@Override
 	void doStep() {
 		int i;
 		for (i = 0; i != getPostCount(); i++) {
@@ -182,6 +195,7 @@ abstract class ChipElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	void reset() {
 		int i;
 		for (i = 0; i != getPostCount(); i++) {
@@ -192,6 +206,7 @@ abstract class ChipElm extends CircuitElm {
 		lastClock = false;
 	}
 
+	@Override
 	String dump() {
 		int t = getDumpType();
 		String s = super.dump();
@@ -205,6 +220,7 @@ abstract class ChipElm extends CircuitElm {
 		return s;
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = getChipName();
 		int i, a = 1;
@@ -225,6 +241,7 @@ abstract class ChipElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	void setCurrent(int x, double c) {
 		int i;
 		for (i = 0; i != getPostCount(); i++)
@@ -236,14 +253,17 @@ abstract class ChipElm extends CircuitElm {
 		return "chip";
 	}
 
+	@Override
 	boolean getConnection(int n1, int n2) {
 		return false;
 	}
 
+	@Override
 	boolean hasGroundConnection(int n1) {
 		return pins[n1].output;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0) {
 			EditInfo ei = new EditInfo("", 0, -1, -1);
@@ -258,6 +278,7 @@ abstract class ChipElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0) {
 			if (ei.checkbox.getState())

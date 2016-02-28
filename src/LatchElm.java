@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.StringTokenizer;
 
 class LatchElm extends ChipElm {
@@ -10,16 +9,19 @@ class LatchElm extends ChipElm {
 		super(xa, ya, xb, yb, f, st);
 	}
 
+	@Override
 	String getChipName() {
 		return "Latch";
 	}
 
+	@Override
 	boolean needsBits() {
 		return true;
 	}
 
 	int loadPin;
 
+	@Override
 	void setupPins() {
 		sizeX = 2;
 		sizeY = bits + 1;
@@ -37,6 +39,7 @@ class LatchElm extends ChipElm {
 
 	boolean lastLoad = false;
 
+	@Override
 	void execute() {
 		int i;
 		if (pins[loadPin].value && !lastLoad)
@@ -45,14 +48,17 @@ class LatchElm extends ChipElm {
 		lastLoad = pins[loadPin].value;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return bits;
 	}
 
+	@Override
 	int getPostCount() {
 		return bits * 2 + 1;
 	}
 
+	@Override
 	int getDumpType() {
 		return 168;
 	}

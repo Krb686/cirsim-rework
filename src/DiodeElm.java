@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class DiodeElm extends CircuitElm {
@@ -29,6 +31,7 @@ class DiodeElm extends CircuitElm {
 		setup();
 	}
 
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
@@ -37,10 +40,12 @@ class DiodeElm extends CircuitElm {
 		diode.setup(fwdrop, zvoltage);
 	}
 
+	@Override
 	int getDumpType() {
 		return 'd';
 	}
 
+	@Override
 	String dump() {
 		flags |= FLAG_FWDROP;
 		return super.dump() + " " + fwdrop;
@@ -50,6 +55,7 @@ class DiodeElm extends CircuitElm {
 	Polygon poly;
 	Point cathode[];
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		calcLeads(16);
@@ -60,12 +66,14 @@ class DiodeElm extends CircuitElm {
 		poly = createPolygon(pa[0], pa[1], lead2);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		drawDiode(g);
 		doDots(g);
 		drawPosts(g);
 	}
 
+	@Override
 	void reset() {
 		diode.reset();
 		volts[0] = volts[1] = curcount = 0;
@@ -89,18 +97,22 @@ class DiodeElm extends CircuitElm {
 		drawThickLine(g, cathode[0], cathode[1]);
 	}
 
+	@Override
 	void stamp() {
 		diode.stamp(nodes[0], nodes[1]);
 	}
 
+	@Override
 	void doStep() {
 		diode.doStep(volts[0] - volts[1]);
 	}
 
+	@Override
 	void calculateCurrent() {
 		current = diode.calculateCurrent(volts[0] - volts[1]);
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "diode";
 		arr[1] = "I = " + getCurrentText(getCurrent());
@@ -109,17 +121,20 @@ class DiodeElm extends CircuitElm {
 		arr[4] = "Vf = " + getVoltageText(fwdrop);
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("Fwd Voltage @ 1A", fwdrop, 10, 1000);
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		fwdrop = ei.value;
 		setup();
 	}
 
+	@Override
 	int getShortcut() {
 		return 'd';
 	}

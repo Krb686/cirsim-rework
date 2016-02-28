@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.StringTokenizer;
 
 class SevenSegDecoderElm extends ChipElm {
@@ -33,10 +32,12 @@ class SevenSegDecoderElm extends ChipElm {
 		super(xa, ya, xb, yb, f, st);
 	}
 
+	@Override
 	String getChipName() {
 		return "Seven Segment LED Decoder";
 	}
 
+	@Override
 	void setupPins() {
 		sizeX = 3;
 		sizeY = 7;
@@ -63,14 +64,17 @@ class SevenSegDecoderElm extends ChipElm {
 		pins[6].output = true;
 	}
 
+	@Override
 	int getPostCount() {
 		return 11;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 7;
 	}
 
+	@Override
 	void execute() {
 		int input = 0;
 		if (pins[7].value)
@@ -87,6 +91,7 @@ class SevenSegDecoderElm extends ChipElm {
 		}
 	}
 
+	@Override
 	int getDumpType() {
 		return 197;
 	}

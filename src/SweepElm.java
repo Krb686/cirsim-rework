@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.StringTokenizer;
 
 class SweepElm extends CircuitElm {
@@ -25,25 +27,30 @@ class SweepElm extends CircuitElm {
 		reset();
 	}
 
+	@Override
 	int getDumpType() {
 		return 170;
 	}
 
+	@Override
 	int getPostCount() {
 		return 1;
 	}
 
 	final int circleSize = 17;
 
+	@Override
 	String dump() {
 		return super.dump() + " " + minF + " " + maxF + " " + maxV + " " + sweepTime;
 	}
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		lead1 = interpPoint(point1, point2, 1 - circleSize / dn);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		setBbox(point1, point2, circleSize);
 		setVoltageColor(g, volts[0]);
@@ -85,6 +92,7 @@ class SweepElm extends CircuitElm {
 			drawDots(g, point1, lead1, curcount);
 	}
 
+	@Override
 	void stamp() {
 		sim.stampVoltageSource(0, nodes[0], voltSource);
 	}
@@ -108,6 +116,7 @@ class SweepElm extends CircuitElm {
 		savedTimeStep = sim.timeStep;
 	}
 
+	@Override
 	void reset() {
 		frequency = minF;
 		freqTime = 0;
@@ -117,6 +126,7 @@ class SweepElm extends CircuitElm {
 
 	double v;
 
+	@Override
 	void startIteration() {
 		// has timestep been changed?
 		if (sim.timeStep != savedTimeStep)
@@ -139,22 +149,27 @@ class SweepElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	void doStep() {
 		sim.updateVoltageSource(0, nodes[0], voltSource, v);
 	}
 
+	@Override
 	double getVoltageDiff() {
 		return volts[0];
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
 
+	@Override
 	boolean hasGroundConnection(int n1) {
 		return true;
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "sweep " + (((flags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
 		arr[1] = "I = " + getCurrentDText(getCurrent());
@@ -164,6 +179,7 @@ class SweepElm extends CircuitElm {
 		arr[5] = "time = " + getUnitText(sweepTime, "s");
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("Min Frequency (Hz)", minF, 0, 0);
@@ -186,6 +202,7 @@ class SweepElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		double maxfreq = 1 / (8 * sim.timeStep);
 		if (n == 0) {

@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class InverterElm extends CircuitElm {
@@ -20,14 +22,17 @@ class InverterElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + slewRate;
 	}
 
+	@Override
 	int getDumpType() {
 		return 'I';
 	}
 
+	@Override
 	void draw(Graphics g) {
 		drawPosts(g);
 		draw2Leads(g);
@@ -41,6 +46,7 @@ class InverterElm extends CircuitElm {
 	Polygon gatePoly;
 	Point pcircle;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		int hs = 16;
@@ -57,14 +63,17 @@ class InverterElm extends CircuitElm {
 		setBbox(point1, point2, hs);
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
 
+	@Override
 	void stamp() {
 		sim.stampVoltageSource(0, nodes[1], voltSource);
 	}
 
+	@Override
 	void doStep() {
 		double v0 = volts[1];
 		double out = volts[0] > 2.5 ? 0 : 5;
@@ -73,36 +82,43 @@ class InverterElm extends CircuitElm {
 		sim.updateVoltageSource(0, nodes[1], voltSource, out);
 	}
 
+	@Override
 	double getVoltageDiff() {
 		return volts[0];
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "inverter";
 		arr[1] = "Vi = " + getVoltageText(volts[0]);
 		arr[2] = "Vo = " + getVoltageText(volts[1]);
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("Slew Rate (V/ns)", slewRate, 0, 0);
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		slewRate = ei.value;
 	}
 
 	// there is no current path through the inverter input, but there
 	// is an indirect path through the output to ground.
+	@Override
 	boolean getConnection(int n1, int n2) {
 		return false;
 	}
 
+	@Override
 	boolean hasGroundConnection(int n1) {
 		return (n1 == 1);
 	}
 
+	@Override
 	int getShortcut() {
 		return '1';
 	}

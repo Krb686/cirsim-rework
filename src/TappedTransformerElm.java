@@ -1,4 +1,5 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 class TappedTransformerElm extends CircuitElm {
@@ -36,14 +37,17 @@ class TappedTransformerElm extends CircuitElm {
 		a = new double[9];
 	}
 
+	@Override
 	int getDumpType() {
 		return 169;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + inductance + " " + ratio + " " + current[0] + " " + current[1] + " " + current[2];
 	}
 
+	@Override
 	void draw(Graphics g) {
 		int i;
 		for (i = 0; i != 5; i++) {
@@ -81,6 +85,7 @@ class TappedTransformerElm extends CircuitElm {
 		setBbox(ptEnds[0], ptEnds[4], 0);
 	}
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		int hs = 32;
@@ -107,20 +112,24 @@ class TappedTransformerElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	Point getPost(int n) {
 		return ptEnds[n];
 	}
 
+	@Override
 	int getPostCount() {
 		return 5;
 	}
 
+	@Override
 	void reset() {
 		current[0] = current[1] = volts[0] = volts[1] = volts[2] = volts[3] = curcount[0] = curcount[1] = 0;
 	}
 
 	double a[];
 
+	@Override
 	void stamp() {
 		// equations for transformer:
 		// v1 = L1 di1/dt + M1 di2/dt + M1 di3/dt
@@ -177,6 +186,7 @@ class TappedTransformerElm extends CircuitElm {
 			sim.stampRightSide(nodes[i]);
 	}
 
+	@Override
 	void startIteration() {
 		voltdiff[0] = volts[0] - volts[1];
 		voltdiff[1] = volts[2] - volts[3];
@@ -191,12 +201,14 @@ class TappedTransformerElm extends CircuitElm {
 
 	double curSourceValue[], voltdiff[];
 
+	@Override
 	void doStep() {
 		sim.stampCurrentSource(nodes[0], nodes[1], curSourceValue[0]);
 		sim.stampCurrentSource(nodes[2], nodes[3], curSourceValue[1]);
 		sim.stampCurrentSource(nodes[3], nodes[4], curSourceValue[2]);
 	}
 
+	@Override
 	void calculateCurrent() {
 		voltdiff[0] = volts[0] - volts[1];
 		voltdiff[1] = volts[2] - volts[3];
@@ -209,6 +221,7 @@ class TappedTransformerElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "transformer";
 		arr[1] = "L = " + getUnitText(inductance, "H");
@@ -219,6 +232,7 @@ class TappedTransformerElm extends CircuitElm {
 		arr[4] = "Vd2 = " + getVoltageText(volts[1] - volts[3]);
 	}
 
+	@Override
 	boolean getConnection(int n1, int n2) {
 		if (comparePair(n1, n2, 0, 1))
 			return true;
@@ -231,6 +245,7 @@ class TappedTransformerElm extends CircuitElm {
 		return false;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("Primary Inductance (H)", inductance, .01, 5);
@@ -239,6 +254,7 @@ class TappedTransformerElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0)
 			inductance = ei.value;

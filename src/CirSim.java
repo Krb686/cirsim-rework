@@ -31,6 +31,7 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -62,7 +63,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 	 * 
 	 */
 	private static final long serialVersionUID = -8135053669823997872L;
-	Thread engine = null;
+
 	Dimension winSize;
 	Image dbimage;
 	Random random;
@@ -288,12 +289,12 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		shortcuts = new Class[127];
 
 		// these characters are reserved
-		dumpTypes[(int) 'o'] = Scope.class;
-		dumpTypes[(int) 'h'] = Scope.class;
-		dumpTypes[(int) '$'] = Scope.class;
-		dumpTypes[(int) '%'] = Scope.class;
-		dumpTypes[(int) '?'] = Scope.class;
-		dumpTypes[(int) 'B'] = Scope.class;
+		dumpTypes['o'] = Scope.class;
+		dumpTypes['h'] = Scope.class;
+		dumpTypes['$'] = Scope.class;
+		dumpTypes['%'] = Scope.class;
+		dumpTypes['?'] = Scope.class;
+		dumpTypes['B'] = Scope.class;
 
 		main.setLayout(new CircuitLayout());
 		cv = new CircuitCanvas(this);
@@ -401,6 +402,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		requestFocus();
 
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent we) {
 				destroyFrame();
 			}
@@ -643,6 +645,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		shown = true;
 	}
 
+	@Override
 	public void requestFocus() {
 		super.requestFocus();
 		cv.requestFocus();
@@ -807,6 +810,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		}
 	}
 
+	@Override
 	public boolean handleEvent(Event ev) {
 		if (ev.id == Event.WINDOW_DESTROY) {
 			destroyFrame();
@@ -815,6 +819,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		return super.handleEvent(ev);
 	}
 
+	@Override
 	public void paint(Graphics g) {
 		cv.repaint();
 	}
@@ -1960,7 +1965,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 					if (j < nodeList.size() - 1) {
 						CircuitNode cn = getCircuitNode(j + 1);
 						for (k = 0; k != cn.links.size(); k++) {
-							CircuitNodeLink cnl = (CircuitNodeLink) cn.links.elementAt(k);
+							CircuitNodeLink cnl = cn.links.elementAt(k);
 							cnl.elm.setNodeVoltage(cnl.num, res);
 						}
 					} else {
@@ -2005,21 +2010,26 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		cv.repaint(pause);
 	}
 
+	@Override
 	public void componentHidden(ComponentEvent e) {
 	}
 
+	@Override
 	public void componentMoved(ComponentEvent e) {
 	}
 
+	@Override
 	public void componentShown(ComponentEvent e) {
 		cv.repaint();
 	}
 
+	@Override
 	public void componentResized(ComponentEvent e) {
 		handleResize();
 		cv.repaint(100);
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		String ac = e.getActionCommand();
 		if (e.getSource() == resetButton) {
@@ -2220,6 +2230,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		return dump;
 	}
 
+	@Override
 	public void adjustmentValueChanged(AdjustmentEvent e) {
 		System.out.print(((Scrollbar) e.getSource()).getValue() + "\n");
 	}
@@ -2328,7 +2339,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		t = 0;
 		System.out.println(str);
 		try {
-			URL url = new URL(getCodeBase() + "circuits/" + str);
+			URL url = new URL(getCodeBase() + "../circuits/" + str);
 			ByteArrayOutputStream ba = readUrlData(url);
 			readSetup(ba.toByteArray(), ba.size(), false);
 		} catch (Exception e1) {
@@ -2504,12 +2515,13 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		return -1;
 	}
 
+	@Override
 	public void mouseDragged(MouseEvent e) {
 		// ignore right mouse button with no modifiers (needed on PC)
-		if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0) {
+		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0) {
 			int ex = e.getModifiersEx();
-			if ((ex & (MouseEvent.META_DOWN_MASK | MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK
-					| MouseEvent.ALT_DOWN_MASK)) == 0)
+			if ((ex & (InputEvent.META_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK
+					| InputEvent.ALT_DOWN_MASK)) == 0)
 				return;
 		}
 		if (!circuitArea.contains(e.getX(), e.getY()))
@@ -2698,8 +2710,9 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		needAnalyze();
 	}
 
+	@Override
 	public void mouseMoved(MouseEvent e) {
-		if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
+		if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0)
 			return;
 		int x = e.getX();
 		int y = e.getY();
@@ -2783,51 +2796,55 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		return x2 * x2 + y2 * y2;
 	}
 
+	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (e.getClickCount() == 2 && !didSwitch)
 			doEditMenu(e);
-		if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
+		if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0) {
 			if (mouseMode == MODE_SELECT || mouseMode == MODE_DRAG_SELECTED)
 				clearSelection();
 		}
 	}
 
+	@Override
 	public void mouseEntered(MouseEvent e) {
 	}
 
+	@Override
 	public void mouseExited(MouseEvent e) {
 		scopeSelected = -1;
 		mouseElm = plotXElm = plotYElm = null;
 		cv.repaint();
 	}
 
+	@Override
 	public void mousePressed(MouseEvent e) {
 		didSwitch = false;
 
 		System.out.println(e.getModifiers());
 		int ex = e.getModifiersEx();
-		if ((ex & (MouseEvent.META_DOWN_MASK | MouseEvent.SHIFT_DOWN_MASK)) == 0 && e.isPopupTrigger()) {
+		if ((ex & (InputEvent.META_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK)) == 0 && e.isPopupTrigger()) {
 			doPopupMenu(e);
 			return;
 		}
-		if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
+		if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0) {
 			// left mouse
 			tempMouseMode = mouseMode;
-			if ((ex & MouseEvent.ALT_DOWN_MASK) != 0 && (ex & MouseEvent.META_DOWN_MASK) != 0)
+			if ((ex & InputEvent.ALT_DOWN_MASK) != 0 && (ex & InputEvent.META_DOWN_MASK) != 0)
 				tempMouseMode = MODE_DRAG_COLUMN;
-			else if ((ex & MouseEvent.ALT_DOWN_MASK) != 0 && (ex & MouseEvent.SHIFT_DOWN_MASK) != 0)
+			else if ((ex & InputEvent.ALT_DOWN_MASK) != 0 && (ex & InputEvent.SHIFT_DOWN_MASK) != 0)
 				tempMouseMode = MODE_DRAG_ROW;
-			else if ((ex & MouseEvent.SHIFT_DOWN_MASK) != 0)
+			else if ((ex & InputEvent.SHIFT_DOWN_MASK) != 0)
 				tempMouseMode = MODE_SELECT;
-			else if ((ex & MouseEvent.ALT_DOWN_MASK) != 0)
+			else if ((ex & InputEvent.ALT_DOWN_MASK) != 0)
 				tempMouseMode = MODE_DRAG_ALL;
-			else if ((ex & (MouseEvent.CTRL_DOWN_MASK | MouseEvent.META_DOWN_MASK)) != 0)
+			else if ((ex & (InputEvent.CTRL_DOWN_MASK | InputEvent.META_DOWN_MASK)) != 0)
 				tempMouseMode = MODE_DRAG_POST;
-		} else if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0) {
+		} else if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0) {
 			// right mouse
-			if ((ex & MouseEvent.SHIFT_DOWN_MASK) != 0)
+			if ((ex & InputEvent.SHIFT_DOWN_MASK) != 0)
 				tempMouseMode = MODE_DRAG_ROW;
-			else if ((ex & (MouseEvent.CTRL_DOWN_MASK | MouseEvent.META_DOWN_MASK)) != 0)
+			else if ((ex & (InputEvent.CTRL_DOWN_MASK | InputEvent.META_DOWN_MASK)) != 0)
 				tempMouseMode = MODE_DRAG_COLUMN;
 			else
 				return;
@@ -2922,9 +2939,10 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		}
 	}
 
+	@Override
 	public void mouseReleased(MouseEvent e) {
 		int ex = e.getModifiersEx();
-		if ((ex & (MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK | MouseEvent.META_DOWN_MASK)) == 0
+		if ((ex & (InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK | InputEvent.META_DOWN_MASK)) == 0
 				&& e.isPopupTrigger()) {
 			doPopupMenu(e);
 			return;
@@ -2967,6 +2985,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		enableUndoRedo();
 	}
 
+	@Override
 	public void itemStateChanged(ItemEvent e) {
 		cv.repaint(pause);
 		Object mi = e.getItemSelectable();
@@ -3200,12 +3219,15 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		}
 	}
 
+	@Override
 	public void keyPressed(KeyEvent e) {
 	}
 
+	@Override
 	public void keyReleased(KeyEvent e) {
 	}
 
+	@Override
 	public void keyTyped(KeyEvent e) {
 		if (e.getKeyChar() == 127) {
 			doDelete();

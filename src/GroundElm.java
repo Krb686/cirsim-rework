@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Graphics;
 import java.util.StringTokenizer;
 
 class GroundElm extends CircuitElm {
@@ -10,14 +10,17 @@ class GroundElm extends CircuitElm {
 		super(xa, ya, xb, yb, f);
 	}
 
+	@Override
 	int getDumpType() {
 		return 'g';
 	}
 
+	@Override
 	int getPostCount() {
 		return 1;
 	}
 
+	@Override
 	void draw(Graphics g) {
 		setVoltageColor(g, 0);
 		drawThickLine(g, point1, point2);
@@ -34,31 +37,38 @@ class GroundElm extends CircuitElm {
 		drawPost(g, x, y, nodes[0]);
 	}
 
+	@Override
 	void setCurrent(int x, double c) {
 		current = -c;
 	}
 
+	@Override
 	void stamp() {
 		sim.stampVoltageSource(0, nodes[0], voltSource, 0);
 	}
 
+	@Override
 	double getVoltageDiff() {
 		return 0;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "ground";
 		arr[1] = "I = " + getCurrentText(getCurrent());
 	}
 
+	@Override
 	boolean hasGroundConnection(int n1) {
 		return true;
 	}
 
+	@Override
 	int getShortcut() {
 		return 'g';
 	}

@@ -3,10 +3,12 @@ class ACRailElm extends RailElm {
 		super(xx, yy, WF_AC);
 	}
 
+	@Override
 	Class getDumpClass() {
 		return RailElm.class;
 	}
 
+	@Override
 	int getShortcut() {
 		return 0;
 	}

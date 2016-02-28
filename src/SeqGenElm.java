@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Checkbox;
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
@@ -27,10 +27,12 @@ class SeqGenElm extends ChipElm {
 	double lastchangetime = 0;
 	boolean clockstate = false;
 
+	@Override
 	String getChipName() {
 		return "Sequence generator";
 	}
 
+	@Override
 	void setupPins() {
 		sizeX = 2;
 		sizeY = 2;
@@ -42,10 +44,12 @@ class SeqGenElm extends ChipElm {
 		pins[1].output = true;
 	}
 
+	@Override
 	int getPostCount() {
 		return 2;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
@@ -58,6 +62,7 @@ class SeqGenElm extends ChipElm {
 		position++;
 	}
 
+	@Override
 	void execute() {
 		if (oneshot) {
 			if (sim.t - lastchangetime > 0.005) {
@@ -81,14 +86,17 @@ class SeqGenElm extends ChipElm {
 
 	}
 
+	@Override
 	int getDumpType() {
 		return 188;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + data + " " + oneshot;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		// My code
 		if (n == 0) {
@@ -143,6 +151,7 @@ class SeqGenElm extends ChipElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0) {
 			if (ei.checkbox.getState())

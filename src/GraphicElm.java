@@ -8,6 +8,7 @@ class GraphicElm extends CircuitElm {
 		super(xa, ya, xb, yb, flags);
 	}
 
+	@Override
 	int getPostCount() {
 		return 0;
 	}

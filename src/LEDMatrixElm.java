@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.StringTokenizer;
 
 class LEDMatrixElm extends ChipElm {
@@ -25,10 +27,12 @@ class LEDMatrixElm extends ChipElm {
 	private double colorG = 0.0;
 	private double colorB = 0.0;
 
+	@Override
 	String getChipName() {
 		return "LED Matrix";
 	}
 
+	@Override
 	void setupPins() {
 		sizeX = 8;
 		sizeY = 8;
@@ -52,6 +56,7 @@ class LEDMatrixElm extends ChipElm {
 		pins[15] = new Pin(7, SIDE_S, "");
 	}
 
+	@Override
 	void draw(Graphics g) {
 		drawChip(g);
 		Color color = new Color((int) (colorR * 255), (int) (colorG * 255), (int) (colorB * 255));
@@ -70,6 +75,7 @@ class LEDMatrixElm extends ChipElm {
 			}
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 2) {
 			EditInfo ei = new EditInfo("", 0, -1, -1);
@@ -93,6 +99,7 @@ class LEDMatrixElm extends ChipElm {
 		return super.getEditInfo(n);
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		super.setEditValue(n, ei);
 		if (n == 2)
@@ -107,18 +114,22 @@ class LEDMatrixElm extends ChipElm {
 			colorB = ei.value;
 	}
 
+	@Override
 	int getPostCount() {
 		return 16;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 0;
 	}
 
+	@Override
 	int getDumpType() {
 		return 207;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + negateRows + " " + negateColumns + " " + colorR + " " + colorG + " " + colorB;
 	}

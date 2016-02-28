@@ -1,5 +1,9 @@
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Graphics;
+import java.awt.Label;
+import java.awt.Point;
+import java.awt.Scrollbar;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.util.StringTokenizer;
 
 class PotElm extends CircuitElm implements AdjustmentListener {
@@ -32,44 +36,51 @@ class PotElm extends CircuitElm implements AdjustmentListener {
 	void setup() {
 	}
 
+	@Override
 	int getPostCount() {
 		return 3;
 	}
 
+	@Override
 	int getDumpType() {
 		return 174;
 	}
 
+	@Override
 	Point getPost(int n) {
 		return (n == 0) ? point1 : (n == 1) ? point2 : post3;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + maxResistance + " " + position + " " + sliderText;
 	}
 
 	void createSlider() {
-		sim.main.add(label = new Label(sliderText, Label.CENTER));
+		CirSim.main.add(label = new Label(sliderText, Label.CENTER));
 		int value = (int) (position * 100);
-		sim.main.add(slider = new Scrollbar(Scrollbar.HORIZONTAL, value, 1, 0, 101));
-		sim.main.validate();
+		CirSim.main.add(slider = new Scrollbar(Scrollbar.HORIZONTAL, value, 1, 0, 101));
+		CirSim.main.validate();
 		slider.addAdjustmentListener(this);
 	}
 
+	@Override
 	public void adjustmentValueChanged(AdjustmentEvent e) {
 		sim.analyzeFlag = true;
 		setPoints();
 	}
 
+	@Override
 	void delete() {
-		sim.main.remove(label);
-		sim.main.remove(slider);
+		CirSim.main.remove(label);
+		CirSim.main.remove(slider);
 	}
 
 	Point post3, corner2, arrowPoint, midpoint, arrow1, arrow2;
 	Point ps3, ps4;
 	int bodyLen;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		int offset = 0;
@@ -104,6 +115,7 @@ class PotElm extends CircuitElm implements AdjustmentListener {
 		ps4 = new Point();
 	}
 
+	@Override
 	void draw(Graphics g) {
 		int segments = 16;
 		int i;
@@ -176,12 +188,14 @@ class PotElm extends CircuitElm implements AdjustmentListener {
 		drawPosts(g);
 	}
 
+	@Override
 	void calculateCurrent() {
 		current1 = (volts[0] - volts[2]) / resistance1;
 		current2 = (volts[1] - volts[2]) / resistance2;
 		current3 = -current1 - current2;
 	}
 
+	@Override
 	void stamp() {
 		resistance1 = maxResistance * position;
 		resistance2 = maxResistance * (1 - position);
@@ -189,15 +203,17 @@ class PotElm extends CircuitElm implements AdjustmentListener {
 		sim.stampResistor(nodes[2], nodes[1], resistance2);
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "potentiometer";
 		arr[1] = "Vd = " + getVoltageDText(getVoltageDiff());
-		arr[2] = "R1 = " + getUnitText(resistance1, sim.ohmString);
-		arr[3] = "R2 = " + getUnitText(resistance2, sim.ohmString);
+		arr[2] = "R1 = " + getUnitText(resistance1, CirSim.ohmString);
+		arr[3] = "R2 = " + getUnitText(resistance2, CirSim.ohmString);
 		arr[4] = "I1 = " + getCurrentDText(current1);
 		arr[5] = "I2 = " + getCurrentDText(current2);
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		// ohmString doesn't work here on linux
 		if (n == 0)
@@ -210,6 +226,7 @@ class PotElm extends CircuitElm implements AdjustmentListener {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0)
 			maxResistance = ei.value;

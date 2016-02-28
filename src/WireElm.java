@@ -1,4 +1,5 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Graphics;
 import java.util.StringTokenizer;
 
 class WireElm extends CircuitElm {
@@ -13,6 +14,7 @@ class WireElm extends CircuitElm {
 	static final int FLAG_SHOWCURRENT = 1;
 	static final int FLAG_SHOWVOLTAGE = 2;
 
+	@Override
 	void draw(Graphics g) {
 		setVoltageColor(g, volts[0]);
 		drawThickLine(g, point1, point2);
@@ -28,6 +30,7 @@ class WireElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	void stamp() {
 		sim.stampVoltageSource(nodes[0], nodes[1], voltSource, 0);
 	}
@@ -40,32 +43,39 @@ class WireElm extends CircuitElm {
 		return (flags & FLAG_SHOWVOLTAGE) != 0;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "wire";
 		arr[1] = "I = " + getCurrentDText(getCurrent());
 		arr[2] = "V = " + getVoltageText(volts[0]);
 	}
 
+	@Override
 	int getDumpType() {
 		return 'w';
 	}
 
+	@Override
 	double getPower() {
 		return 0;
 	}
 
+	@Override
 	double getVoltageDiff() {
 		return volts[0];
 	}
 
+	@Override
 	boolean isWire() {
 		return true;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0) {
 			EditInfo ei = new EditInfo("", 0, -1, -1);
@@ -80,6 +90,7 @@ class WireElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0) {
 			if (ei.checkbox.getState())
@@ -95,6 +106,7 @@ class WireElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	int getShortcut() {
 		return 'w';
 	}

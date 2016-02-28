@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 class OrGateElm extends GateElm {
@@ -10,10 +10,12 @@ class OrGateElm extends GateElm {
 		super(xa, ya, xb, yb, f, st);
 	}
 
+	@Override
 	String getGateName() {
 		return "OR gate";
 	}
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 
@@ -44,6 +46,7 @@ class OrGateElm extends GateElm {
 		gatePoly = createPolygon(triPoints);
 	}
 
+	@Override
 	boolean calcFunction() {
 		int i;
 		boolean f = false;
@@ -52,10 +55,12 @@ class OrGateElm extends GateElm {
 		return f;
 	}
 
+	@Override
 	int getDumpType() {
 		return 152;
 	}
 
+	@Override
 	int getShortcut() {
 		return '3';
 	}

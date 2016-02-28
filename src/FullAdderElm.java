@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.StringTokenizer;
 
 class FullAdderElm extends ChipElm {
@@ -14,10 +13,12 @@ class FullAdderElm extends ChipElm {
 		super(xa, ya, xb, yb, f, st);
 	}
 
+	@Override
 	String getChipName() {
 		return "Full Adder";
 	}
 
+	@Override
 	void setupPins() {
 		sizeX = 2;
 		sizeY = 3;
@@ -33,20 +34,24 @@ class FullAdderElm extends ChipElm {
 
 	}
 
+	@Override
 	int getPostCount() {
 		return 5;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 2;
 	}
 
+	@Override
 	void execute() {
 		pins[0].value = (pins[2].value ^ pins[3].value) ^ pins[4].value;
 		pins[1].value = (pins[2].value && pins[3].value) || (pins[2].value && pins[4].value)
 				|| (pins[3].value && pins[4].value);
 	}
 
+	@Override
 	int getDumpType() {
 		return 196;
 	}

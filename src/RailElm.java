@@ -1,4 +1,5 @@
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.util.StringTokenizer;
 
 class RailElm extends VoltageElm {
@@ -16,19 +17,23 @@ class RailElm extends VoltageElm {
 
 	final int FLAG_CLOCK = 1;
 
+	@Override
 	int getDumpType() {
 		return 'R';
 	}
 
+	@Override
 	int getPostCount() {
 		return 1;
 	}
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		lead1 = interpPoint(point1, point2, 1 - circleSize / dn);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		setBbox(point1, point2, circleSize);
 		setVoltageColor(g, volts[0]);
@@ -59,10 +64,12 @@ class RailElm extends VoltageElm {
 			drawDots(g, point1, lead1, curcount);
 	}
 
+	@Override
 	double getVoltageDiff() {
 		return volts[0];
 	}
 
+	@Override
 	void stamp() {
 		if (waveform == WF_DC)
 			sim.stampVoltageSource(0, nodes[0], voltSource, getVoltage());
@@ -70,15 +77,18 @@ class RailElm extends VoltageElm {
 			sim.stampVoltageSource(0, nodes[0], voltSource);
 	}
 
+	@Override
 	void doStep() {
 		if (waveform != WF_DC)
 			sim.updateVoltageSource(0, nodes[0], voltSource, getVoltage());
 	}
 
+	@Override
 	boolean hasGroundConnection(int n1) {
 		return true;
 	}
 
+	@Override
 	int getShortcut() {
 		return 'V';
 	}

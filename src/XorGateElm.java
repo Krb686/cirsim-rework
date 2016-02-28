@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.StringTokenizer;
 
 class XorGateElm extends OrGateElm {
@@ -10,10 +9,12 @@ class XorGateElm extends OrGateElm {
 		super(xa, ya, xb, yb, f, st);
 	}
 
+	@Override
 	String getGateName() {
 		return "XOR gate";
 	}
 
+	@Override
 	boolean calcFunction() {
 		int i;
 		boolean f = false;
@@ -22,10 +23,12 @@ class XorGateElm extends OrGateElm {
 		return f;
 	}
 
+	@Override
 	int getDumpType() {
 		return 154;
 	}
 
+	@Override
 	int getShortcut() {
 		return '4';
 	}

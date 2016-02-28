@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class JfetElm extends MosfetElm {
@@ -16,6 +18,7 @@ class JfetElm extends MosfetElm {
 	Polygon arrowPoly;
 	Point gatePt;
 
+	@Override
 	void draw(Graphics g) {
 		setBbox(point1, point2, hs);
 		setVoltageColor(g, volts[1]);
@@ -39,6 +42,7 @@ class JfetElm extends MosfetElm {
 		drawPosts(g);
 	}
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 
@@ -64,19 +68,23 @@ class JfetElm extends MosfetElm {
 			arrowPoly = calcArrow(point1, gatePt, 8, 3);
 	}
 
+	@Override
 	int getDumpType() {
 		return 'j';
 	}
 
 	// these values are taken from Hayes+Horowitz p155
+	@Override
 	double getDefaultThreshold() {
 		return -4;
 	}
 
+	@Override
 	double getBeta() {
 		return .00125;
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		getFetInfo(arr, "JFET");
 	}

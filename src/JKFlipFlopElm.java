@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Checkbox;
 import java.util.StringTokenizer;
 
 class JKFlipFlopElm extends ChipElm {
@@ -17,10 +17,12 @@ class JKFlipFlopElm extends ChipElm {
 		pins[4].value = !pins[3].value;
 	}
 
+	@Override
 	String getChipName() {
 		return "JK flip-flop";
 	}
 
+	@Override
 	void setupPins() {
 		sizeX = 2;
 		sizeY = 3;
@@ -41,14 +43,17 @@ class JKFlipFlopElm extends ChipElm {
 		}
 	}
 
+	@Override
 	int getPostCount() {
 		return 5 + (hasReset() ? 1 : 0);
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 2;
 	}
 
+	@Override
 	void execute() {
 		if (!pins[1].value && lastClock) {
 			boolean q = pins[3].value;
@@ -72,10 +77,12 @@ class JKFlipFlopElm extends ChipElm {
 		}
 	}
 
+	@Override
 	int getDumpType() {
 		return 156;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 2) {
 			EditInfo ei = new EditInfo("", 0, -1, -1);
@@ -86,6 +93,7 @@ class JKFlipFlopElm extends ChipElm {
 		return super.getEditInfo(n);
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 2) {
 			if (ei.checkbox.getState()) {

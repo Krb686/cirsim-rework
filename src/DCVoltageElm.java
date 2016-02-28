@@ -3,10 +3,12 @@ class DCVoltageElm extends VoltageElm {
 		super(xx, yy, WF_DC);
 	}
 
+	@Override
 	Class getDumpClass() {
 		return VoltageElm.class;
 	}
 
+	@Override
 	int getShortcut() {
 		return 'v';
 	}

@@ -1,10 +1,12 @@
-import java.awt.*;
-import java.awt.event.*;
-
+import java.awt.Button;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Event;
+import java.awt.Point;
+import java.awt.TextArea;
 import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 class ImportExportClipboardDialog extends Dialog implements ImportExportDialog, ActionListener {
 	CirSim cframe;
@@ -29,22 +31,25 @@ class ImportExportClipboardDialog extends Dialog implements ImportExportDialog, 
 		importButton.addActionListener(this);
 		add(closeButton = new Button("Close"));
 		closeButton.addActionListener(this);
-		Point x = cframe.main.getLocationOnScreen();
+		Point x = CirSim.main.getLocationOnScreen();
 		resize(400, 300);
 		Dimension d = getSize();
 		setLocation(x.x + (cframe.winSize.width - d.width) / 2, x.y + (cframe.winSize.height - d.height) / 2);
 	}
 
+	@Override
 	public void setDump(String dump) {
 		text.setText(dump);
 	}
 
+	@Override
 	public void execute() {
 		if (type == Action.EXPORT)
 			text.selectAll();
 		setVisible(true);
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		int i;
 		Object src = e.getSource();
@@ -63,11 +68,12 @@ class ImportExportClipboardDialog extends Dialog implements ImportExportDialog, 
 			setVisible(false);
 	}
 
+	@Override
 	public boolean handleEvent(Event ev) {
 		if (ev.id == Event.WINDOW_DESTROY) {
 			CirSim.main.requestFocus();
 			setVisible(false);
-			cframe.impDialog = null;
+			CirSim.impDialog = null;
 			return true;
 		}
 		return super.handleEvent(ev);

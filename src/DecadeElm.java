@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.StringTokenizer;
 
 class DecadeElm extends ChipElm {
@@ -10,14 +9,17 @@ class DecadeElm extends ChipElm {
 		super(xa, ya, xb, yb, f, st);
 	}
 
+	@Override
 	String getChipName() {
 		return "decade counter";
 	}
 
+	@Override
 	boolean needsBits() {
 		return true;
 	}
 
+	@Override
 	void setupPins() {
 		sizeX = bits > 2 ? bits : 2;
 		sizeY = 2;
@@ -35,14 +37,17 @@ class DecadeElm extends ChipElm {
 		allocNodes();
 	}
 
+	@Override
 	int getPostCount() {
 		return bits + 2;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return bits;
 	}
 
+	@Override
 	void execute() {
 		int i;
 		if (pins[0].value && !lastClock) {
@@ -62,6 +67,7 @@ class DecadeElm extends ChipElm {
 		lastClock = pins[0].value;
 	}
 
+	@Override
 	int getDumpType() {
 		return 163;
 	}

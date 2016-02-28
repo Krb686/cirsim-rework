@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
@@ -20,10 +19,12 @@ class PisoShiftElm extends ChipElm {
 	boolean clockstate = false;
 	boolean modestate = false;
 
+	@Override
 	String getChipName() {
 		return "PISO shift register";
 	}
 
+	@Override
 	void setupPins() {
 		sizeX = 10;
 		sizeY = 3;
@@ -47,14 +48,17 @@ class PisoShiftElm extends ChipElm {
 
 	}
 
+	@Override
 	int getPostCount() {
 		return 11;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
 
+	@Override
 	void execute() {
 		if (pins[0].value && !modestate) {
 			modestate = true;
@@ -89,6 +93,7 @@ class PisoShiftElm extends ChipElm {
 			clockstate = false;
 	}
 
+	@Override
 	int getDumpType() {
 		return 186;
 	}

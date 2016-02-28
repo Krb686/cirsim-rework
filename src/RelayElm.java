@@ -1,4 +1,7 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 // 0 = switch
@@ -66,15 +69,18 @@ class RelayElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	int getDumpType() {
 		return 178;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + poleCount + " " + inductance + " " + coilCurrent + " " + r_on + " " + r_off + " "
 				+ onCurrent + " " + coilR;
 	}
 
+	@Override
 	void draw(Graphics g) {
 		int i, p;
 		for (i = 0; i != 2; i++) {
@@ -126,6 +132,7 @@ class RelayElm extends CircuitElm {
 		adjustBbox(swpoles[poleCount - 1][0], swposts[poleCount - 1][1]); // XXX
 	}
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		setupPoles();
@@ -165,20 +172,24 @@ class RelayElm extends CircuitElm {
 		lines = newPointArray(poleCount * 2);
 	}
 
+	@Override
 	Point getPost(int n) {
 		if (n < 3 * poleCount)
 			return swposts[n / 3][n % 3];
 		return coilPosts[n - 3 * poleCount];
 	}
 
+	@Override
 	int getPostCount() {
 		return 2 + poleCount * 3;
 	}
 
+	@Override
 	int getInternalNodeCount() {
 		return 1;
 	}
 
+	@Override
 	void reset() {
 		super.reset();
 		ind.reset();
@@ -190,6 +201,7 @@ class RelayElm extends CircuitElm {
 
 	double a1, a2, a3, a4;
 
+	@Override
 	void stamp() {
 		// inductor from coil post 1 to internal node
 		ind.stamp(nodes[nCoil1], nodes[nCoil3]);
@@ -201,6 +213,7 @@ class RelayElm extends CircuitElm {
 			sim.stampNonLinear(nodes[nSwitch0 + i]);
 	}
 
+	@Override
 	void startIteration() {
 		ind.startIteration(volts[nCoil1] - volts[nCoil3]);
 
@@ -224,10 +237,12 @@ class RelayElm extends CircuitElm {
 	}
 
 	// we need this to be able to change the matrix for each step
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
 
+	@Override
 	void doStep() {
 		double voltdiff = volts[nCoil1] - volts[nCoil3];
 		ind.doStep(voltdiff);
@@ -238,6 +253,7 @@ class RelayElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	void calculateCurrent() {
 		double voltdiff = volts[nCoil1] - volts[nCoil3];
 		coilCurrent = ind.calculateCurrent(voltdiff);
@@ -253,6 +269,7 @@ class RelayElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = i_position == 0 ? "relay (off)" : i_position == 1 ? "relay (on)" : "relay";
 		int i;
@@ -263,6 +280,7 @@ class RelayElm extends CircuitElm {
 		arr[ln++] = "coil Vd = " + getVoltageDText(volts[nCoil1] - volts[nCoil2]);
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("Inductance (H)", inductance, 0, 0);
@@ -284,6 +302,7 @@ class RelayElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0 && ei.value > 0) {
 			inductance = ei.value;
@@ -310,10 +329,12 @@ class RelayElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	boolean getConnection(int n1, int n2) {
 		return (n1 / 3 == n2 / 3);
 	}
 
+	@Override
 	int getShortcut() {
 		return 'R';
 	}

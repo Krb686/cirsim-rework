@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
@@ -33,14 +35,17 @@ class InvertingSchmittElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + slewRate + " " + lowerTrigger + " " + upperTrigger;
 	}
 
+	@Override
 	int getDumpType() {
 		return 183;
 	}// Trying to find unused type
 
+	@Override
 	void draw(Graphics g) {
 		drawPosts(g);
 		draw2Leads(g);
@@ -56,6 +61,7 @@ class InvertingSchmittElm extends CircuitElm {
 	Polygon symbolPoly;
 	Point pcircle;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		int hs = 16;
@@ -85,14 +91,17 @@ class InvertingSchmittElm extends CircuitElm {
 		setBbox(point1, point2, hs);
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
 
+	@Override
 	void stamp() {
 		sim.stampVoltageSource(0, nodes[1], voltSource);
 	}
 
+	@Override
 	void doStep() {
 		double v0 = volts[1];
 		double out;
@@ -121,16 +130,19 @@ class InvertingSchmittElm extends CircuitElm {
 		sim.updateVoltageSource(0, nodes[1], voltSource, out);
 	}
 
+	@Override
 	double getVoltageDiff() {
 		return volts[0];
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "InvertingSchmitt";
 		arr[1] = "Vi = " + getVoltageText(volts[0]);
 		arr[2] = "Vo = " + getVoltageText(volts[1]);
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0) {
 			dlt = lowerTrigger;
@@ -148,6 +160,7 @@ class InvertingSchmittElm extends CircuitElm {
 	double dlt;
 	double dut;
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0)
 			dlt = ei.value;
@@ -168,10 +181,12 @@ class InvertingSchmittElm extends CircuitElm {
 
 	// there is no current path through the InvertingSchmitt input, but there
 	// is an indirect path through the output to ground.
+	@Override
 	boolean getConnection(int n1, int n2) {
 		return false;
 	}
 
+	@Override
 	boolean hasGroundConnection(int n1) {
 		return (n1 == 1);
 	}

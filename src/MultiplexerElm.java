@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
@@ -16,10 +15,12 @@ class MultiplexerElm extends ChipElm {
 		super(xa, ya, xb, yb, f, st);
 	}
 
+	@Override
 	String getChipName() {
 		return "Multiplexer";
 	}
 
+	@Override
 	void setupPins() {
 		sizeX = 3;
 		sizeY = 5;
@@ -38,14 +39,17 @@ class MultiplexerElm extends ChipElm {
 
 	}
 
+	@Override
 	int getPostCount() {
 		return 7;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
 
+	@Override
 	void execute() {
 		int selectedvalue = 0;
 		if (pins[4].value)
@@ -56,6 +60,7 @@ class MultiplexerElm extends ChipElm {
 
 	}
 
+	@Override
 	int getDumpType() {
 		return 184;
 	}

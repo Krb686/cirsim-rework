@@ -7,10 +7,12 @@ class ClockElm extends RailElm {
 		flags |= FLAG_CLOCK;
 	}
 
+	@Override
 	Class getDumpClass() {
 		return RailElm.class;
 	}
 
+	@Override
 	int getShortcut() {
 		return 0;
 	}

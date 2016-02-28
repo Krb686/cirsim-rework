@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 abstract class GateElm extends CircuitElm {
@@ -35,6 +37,7 @@ abstract class GateElm extends CircuitElm {
 		flags = (s == 1) ? FLAG_SMALL : 0;
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + inputCount + " " + volts[inputCount];
 	}
@@ -42,6 +45,7 @@ abstract class GateElm extends CircuitElm {
 	Point inPosts[], inGates[];
 	int ww;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		if (dn > 150 && this == sim.dragElm)
@@ -69,6 +73,7 @@ abstract class GateElm extends CircuitElm {
 		setBbox(point1, point2, hs2);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		int i;
 		for (i = 0; i != inputCount; i++) {
@@ -92,28 +97,33 @@ abstract class GateElm extends CircuitElm {
 	Polygon gatePoly;
 	Point pcircle, linePoints[];
 
+	@Override
 	int getPostCount() {
 		return inputCount + 1;
 	}
 
+	@Override
 	Point getPost(int n) {
 		if (n == inputCount)
 			return point2;
 		return inPosts[n];
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
 
 	abstract String getGateName();
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = getGateName();
 		arr[1] = "Vout = " + getVoltageText(volts[inputCount]);
 		arr[2] = "Iout = " + getCurrentText(getCurrent());
 	}
 
+	@Override
 	void stamp() {
 		sim.stampVoltageSource(0, nodes[inputCount], voltSource);
 	}
@@ -124,6 +134,7 @@ abstract class GateElm extends CircuitElm {
 
 	abstract boolean calcFunction();
 
+	@Override
 	void doStep() {
 		int i;
 		boolean f = calcFunction();
@@ -134,12 +145,14 @@ abstract class GateElm extends CircuitElm {
 		sim.updateVoltageSource(0, nodes[inputCount], voltSource, res);
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("# of Inputs", inputCount, 1, 8).setDimensionless();
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		inputCount = (int) ei.value;
 		setPoints();
@@ -147,10 +160,12 @@ abstract class GateElm extends CircuitElm {
 
 	// there is no current path through the gate inputs, but there
 	// is an indirect path through the output to ground.
+	@Override
 	boolean getConnection(int n1, int n2) {
 		return false;
 	}
 
+	@Override
 	boolean hasGroundConnection(int n1) {
 		return (n1 == inputCount);
 	}

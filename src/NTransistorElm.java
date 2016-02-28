@@ -3,6 +3,7 @@ class NTransistorElm extends TransistorElm {
 		super(xx, yy, false);
 	}
 
+	@Override
 	Class getDumpClass() {
 		return TransistorElm.class;
 	}

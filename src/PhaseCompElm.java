@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.StringTokenizer;
 
 class PhaseCompElm extends ChipElm {
@@ -10,10 +9,12 @@ class PhaseCompElm extends ChipElm {
 		super(xa, ya, xb, yb, f, st);
 	}
 
+	@Override
 	String getChipName() {
 		return "phase comparator";
 	}
 
+	@Override
 	void setupPins() {
 		sizeX = 2;
 		sizeY = 2;
@@ -24,10 +25,12 @@ class PhaseCompElm extends ChipElm {
 		pins[2].output = true;
 	}
 
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
 
+	@Override
 	void stamp() {
 		int vn = sim.nodeList.size() + pins[2].voltSource;
 		sim.stampNonLinear(vn);
@@ -37,6 +40,7 @@ class PhaseCompElm extends ChipElm {
 
 	boolean ff1, ff2;
 
+	@Override
 	void doStep() {
 		boolean v1 = volts[0] > 2.5;
 		boolean v2 = volts[1] > 2.5;
@@ -59,14 +63,17 @@ class PhaseCompElm extends ChipElm {
 		pins[1].value = v2;
 	}
 
+	@Override
 	int getPostCount() {
 		return 3;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 1;
 	}
 
+	@Override
 	int getDumpType() {
 		return 161;
 	}

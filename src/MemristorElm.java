@@ -1,4 +1,5 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.StringTokenizer;
 
 class MemristorElm extends CircuitElm {
@@ -24,16 +25,19 @@ class MemristorElm extends CircuitElm {
 		resistance = 100;
 	}
 
+	@Override
 	int getDumpType() {
 		return 'm';
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + r_on + " " + r_off + " " + dopeWidth + " " + totalWidth + " " + mobility;
 	}
 
 	Point ps3, ps4;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		calcLeads(32);
@@ -41,6 +45,7 @@ class MemristorElm extends CircuitElm {
 		ps4 = new Point();
 	}
 
+	@Override
 	void draw(Graphics g) {
 		int segments = 6;
 		int i;
@@ -74,18 +79,22 @@ class MemristorElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	boolean nonLinear() {
 		return true;
 	}
 
+	@Override
 	void calculateCurrent() {
 		current = (volts[0] - volts[1]) / resistance;
 	}
 
+	@Override
 	void reset() {
 		dopeWidth = 0;
 	}
 
+	@Override
 	void startIteration() {
 		double wd = dopeWidth / totalWidth;
 		dopeWidth += sim.timeStep * mobility * r_on * current / totalWidth;
@@ -96,30 +105,36 @@ class MemristorElm extends CircuitElm {
 		resistance = r_on * wd + r_off * (1 - wd);
 	}
 
+	@Override
 	void stamp() {
 		sim.stampNonLinear(nodes[0]);
 		sim.stampNonLinear(nodes[1]);
 	}
 
+	@Override
 	void doStep() {
 		sim.stampResistor(nodes[0], nodes[1], resistance);
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "memristor";
 		getBasicInfo(arr);
-		arr[3] = "R = " + getUnitText(resistance, sim.ohmString);
+		arr[3] = "R = " + getUnitText(resistance, CirSim.ohmString);
 		arr[4] = "P = " + getUnitText(getPower(), "W");
 	}
 
+	@Override
 	double getScopeValue(int x) {
 		return (x == 2) ? resistance : (x == 1) ? getPower() : getVoltageDiff();
 	}
 
+	@Override
 	String getScopeUnits(int x) {
-		return (x == 2) ? sim.ohmString : (x == 1) ? "W" : "V";
+		return (x == 2) ? CirSim.ohmString : (x == 1) ? "W" : "V";
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("Max Resistance (ohms)", r_on, 0, 0);
@@ -134,6 +149,7 @@ class MemristorElm extends CircuitElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0)
 			r_on = ei.value;

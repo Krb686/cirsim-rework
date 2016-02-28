@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
@@ -20,10 +19,12 @@ class SipoShiftElm extends ChipElm {
 					// and it's screwing with my code
 	boolean clockstate = false;
 
+	@Override
 	String getChipName() {
 		return "SIPO shift register";
 	}
 
+	@Override
 	void setupPins() {
 		sizeX = 9;
 		sizeY = 3;
@@ -52,14 +53,17 @@ class SipoShiftElm extends ChipElm {
 
 	}
 
+	@Override
 	int getPostCount() {
 		return 10;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 8;
 	}
 
+	@Override
 	void execute() {
 
 		if (pins[1].value && !clockstate) {
@@ -105,6 +109,7 @@ class SipoShiftElm extends ChipElm {
 			clockstate = false;
 	}
 
+	@Override
 	int getDumpType() {
 		return 189;
 	}

@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class CurrentElm extends CircuitElm {
@@ -18,10 +20,12 @@ class CurrentElm extends CircuitElm {
 		}
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + currentValue;
 	}
 
+	@Override
 	int getDumpType() {
 		return 'i';
 	}
@@ -29,6 +33,7 @@ class CurrentElm extends CircuitElm {
 	Polygon arrow;
 	Point ashaft1, ashaft2, center;
 
+	@Override
 	void setPoints() {
 		super.setPoints();
 		calcLeads(26);
@@ -39,6 +44,7 @@ class CurrentElm extends CircuitElm {
 		arrow = calcArrow(center, p2, 4, 4);
 	}
 
+	@Override
 	void draw(Graphics g) {
 		int cr = 12;
 		draw2Leads(g);
@@ -59,26 +65,31 @@ class CurrentElm extends CircuitElm {
 		drawPosts(g);
 	}
 
+	@Override
 	void stamp() {
 		current = currentValue;
 		sim.stampCurrentSource(nodes[0], nodes[1], current);
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0)
 			return new EditInfo("Current (A)", currentValue, 0, .1);
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		currentValue = ei.value;
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = "current source";
 		getBasicInfo(arr);
 	}
 
+	@Override
 	double getVoltageDiff() {
 		return volts[1] - volts[0];
 	}

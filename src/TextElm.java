@@ -1,4 +1,7 @@
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -46,14 +49,17 @@ class TextElm extends GraphicElm {
 		lines.add(sb.toString());
 	}
 
+	@Override
 	String dump() {
 		return super.dump() + " " + size + " " + text;
 	}
 
+	@Override
 	int getDumpType() {
 		return 'x';
 	}
 
+	@Override
 	void drag(int xx, int yy) {
 		x = xx;
 		y = yy;
@@ -61,6 +67,7 @@ class TextElm extends GraphicElm {
 		y2 = yy;
 	}
 
+	@Override
 	void draw(Graphics g) {
 		// Graphics2D g2 = (Graphics2D)g;
 		// g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -72,14 +79,14 @@ class TextElm extends GraphicElm {
 		int i;
 		int maxw = -1;
 		for (i = 0; i != lines.size(); i++) {
-			int w = fm.stringWidth((String) (lines.elementAt(i)));
+			int w = fm.stringWidth((lines.elementAt(i)));
 			if (w > maxw)
 				maxw = w;
 		}
 		int cury = y;
 		setBbox(x, y, x, y);
 		for (i = 0; i != lines.size(); i++) {
-			String s = (String) (lines.elementAt(i));
+			String s = (lines.elementAt(i));
 			if ((flags & FLAG_CENTER) != 0)
 				x = (sim.winSize.width - fm.stringWidth(s)) / 2;
 			g.drawString(s, x, cury);
@@ -94,6 +101,7 @@ class TextElm extends GraphicElm {
 		y2 = boundingBox.y + boundingBox.height;
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		if (n == 0) {
 			EditInfo ei = new EditInfo("Text", 0, -1, -1);
@@ -115,6 +123,7 @@ class TextElm extends GraphicElm {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0) {
 			text = ei.textf.getText();
@@ -136,10 +145,12 @@ class TextElm extends GraphicElm {
 		}
 	}
 
+	@Override
 	boolean isCenteredText() {
 		return (flags & FLAG_CENTER) != 0;
 	}
 
+	@Override
 	void getInfo(String arr[]) {
 		arr[0] = text;
 	}

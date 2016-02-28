@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
@@ -18,6 +17,7 @@ class SRAMElm extends ChipElm {
 			data[i] = 0;// Initialise data
 	}
 
+	@Override
 	String getChipName() {
 		return "SRAM";
 	}
@@ -25,6 +25,7 @@ class SRAMElm extends ChipElm {
 	short data[] = new short[256];// Fuck this lack of unsigned types. That's
 									// twice as much data as I'd need in C
 
+	@Override
 	void setupPins() {
 		sizeX = 4;
 		sizeY = 9;
@@ -58,14 +59,17 @@ class SRAMElm extends ChipElm {
 		pins[17].output = true;
 	}
 
+	@Override
 	int getPostCount() {
 		return 18;
 	}
 
+	@Override
 	int getVoltageSourceCount() {
 		return 8;
 	}
 
+	@Override
 	void execute() {
 		short index = 0;
 		if (pins[8].value || pins[9].value) {
@@ -140,6 +144,7 @@ class SRAMElm extends ChipElm {
 		}
 	}
 
+	@Override
 	void doStep() {
 		int i;
 		for (i = 0; i != getPostCount(); i++) {
@@ -157,6 +162,7 @@ class SRAMElm extends ChipElm {
 		}
 	}
 
+	@Override
 	int getDumpType() {
 		return 204;
 	}

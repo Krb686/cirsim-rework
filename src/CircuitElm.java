@@ -1,5 +1,10 @@
-import java.awt.*;
-import java.text.DecimalFormat;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.text.NumberFormat;
 
 public abstract class CircuitElm implements Editable {
@@ -59,11 +64,11 @@ public abstract class CircuitElm implements Editable {
 		ps1 = new Point();
 		ps2 = new Point();
 
-		showFormat = DecimalFormat.getInstance();
+		showFormat = NumberFormat.getInstance();
 		showFormat.setMaximumFractionDigits(2);
-		shortFormat = DecimalFormat.getInstance();
+		shortFormat = NumberFormat.getInstance();
 		shortFormat.setMaximumFractionDigits(1);
-		noCommaFormat = DecimalFormat.getInstance();
+		noCommaFormat = NumberFormat.getInstance();
 		noCommaFormat.setMaximumFractionDigits(10);
 		noCommaFormat.setGroupingUsed(false);
 	}
@@ -708,10 +713,12 @@ public abstract class CircuitElm implements Editable {
 		return (x == 1) ? "W" : "V";
 	}
 
+	@Override
 	public EditInfo getEditInfo(int n) {
 		return null;
 	}
 
+	@Override
 	public void setEditValue(int n, EditInfo ei) {
 	}
 

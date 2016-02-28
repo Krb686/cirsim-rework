@@ -51,22 +51,29 @@ import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+/**
+ * @author Paul Falstad
+ *
+ */
 public class CirSim extends Frame implements ComponentListener, ActionListener, AdjustmentListener, MouseMotionListener,
 		MouseListener, ItemListener, KeyListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8135053669823997872L;
 	Thread engine = null;
-
 	Dimension winSize;
 	Image dbimage;
-
 	Random random;
+	/**
+	 * ??
+	 */
 	public static final int sourceRadius = 7;
+	/**
+	 * ??
+	 */
 	public static final double freqMult = 3.14159265 * 2 * 4;
-
-	public String getAppletInfo() {
-		return "Circuit by Paul Falstad";
-	}
-
 	static Container main;
 	Label titleLabel;
 	Button resetButton;
@@ -114,7 +121,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 	CheckboxMenuItem scopeResistMenuItem;
 	CheckboxMenuItem scopeVceIcMenuItem;
 	MenuItem scopeSelectYMenuItem;
-	Class addingClass;
+	Class<?> addingClass;
 	int mouseMode = MODE_SELECT;
 	int tempMouseMode = MODE_SELECT;
 	String mouseModeStr = "Select";
@@ -177,6 +184,35 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 	Rectangle circuitArea;
 	int circuitBottom;
 	Vector<String> undoStack, redoStack;
+	String startCircuit = null;
+	String startLabel = null;
+	String startCircuitText = null;
+	String baseURL = "http://www.falstad.com/circuit/";
+	CircuitCanvas cv;
+	Circuit applet;
+	static final int resct = 6;
+	long lastTime = 0, lastFrameTime, lastIterTime, secTime = 0;
+	int frames = 0;
+	int steps = 0;
+	int framerate = 0, steprate = 0;
+	Vector<CircuitNode> nodeList;
+	CircuitElm voltageSources[];
+	boolean shown = false;
+	boolean converged;
+	int subIterations;
+
+	// ================================ Methods ================================
+	// =========================================================================
+	// =========================================================================
+	// =========================================================================
+	// =========================================================================
+	// =========================================================================
+	// =========================================================================
+	// =========================================================================
+
+	public String getAppletInfo() {
+		return "Circuit by Paul Falstad";
+	}
 
 	int getrand(int x) {
 		int q = random.nextInt();
@@ -185,19 +221,11 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		return q % x;
 	}
 
-	CircuitCanvas cv;
-	Circuit applet;
-
 	CirSim(Circuit a) {
 		super("Circuit Simulator v1.6i");
 		applet = a;
 		useFrame = false;
 	}
-
-	String startCircuit = null;
-	String startLabel = null;
-	String startCircuitText = null;
-	String baseURL = "http://www.falstad.com/circuit/";
 
 	/**
 	 * Initialize the circuit simulation
@@ -609,8 +637,6 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 
 	}
 
-	boolean shown = false;
-
 	public void triggerShow() {
 		if (!shown)
 			show();
@@ -793,12 +819,6 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		cv.repaint();
 	}
 
-	static final int resct = 6;
-	long lastTime = 0, lastFrameTime, lastIterTime, secTime = 0;
-	int frames = 0;
-	int steps = 0;
-	int framerate = 0, steprate = 0;
-
 	/**
 	 * @param realg
 	 */
@@ -881,6 +901,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 				ce.drawPost(g, ce.x2, ce.y2);
 			}
 		int badnodes = 0;
+
 		// find bad connections, nodes not connected to other elements which
 		// intersect other elements' bounding boxes
 		// debugged by hausen: nullPointerException
@@ -1137,9 +1158,6 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		cv.repaint();
 	}
 
-	Vector<CircuitNode> nodeList;
-	CircuitElm voltageSources[];
-
 	public CircuitNode getCircuitNode(int n) {
 		if (n >= nodeList.size())
 			return null;
@@ -1162,6 +1180,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 			return;
 		}
 
+		// Setup variables
 		stopMessage = null;
 		stopElm = null;
 		int i, j;
@@ -1172,7 +1191,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		CircuitElm volt = null;
 
 		// System.out.println("ac1");
-		// look for voltage or ground element
+
 		// detect if there are any ground or voltage elements
 		for (i = 0; i != elmList.size(); i++) {
 			CircuitElm ce = getElm(i);
@@ -1209,15 +1228,22 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 			int ivs = ce.getVoltageSourceCount();
 			int posts = ce.getPostCount();
 
-			// allocate a node for each post and match posts to nodes
+			// allocate a CircuitNode for each post and match posts to nodes
 			for (j = 0; j != posts; j++) {
 				Point pt = ce.getPost(j);
 				int k;
 				for (k = 0; k != nodeList.size(); k++) {
 					CircuitNode cn = getCircuitNode(k);
+
+					// If the current NODE is in the same position (x, y) as the
+					// current POST of the current CircuitElm, break early
+					// Otherwise, this will continue to the end
 					if (pt.x == cn.x && pt.y == cn.y)
 						break;
 				}
+
+				// If the loop reached the end of the node list, a brand new
+				// CircuitNode is needed for the current post.
 				if (k == nodeList.size()) {
 					CircuitNode cn = new CircuitNode();
 					cn.x = pt.x;
@@ -1228,6 +1254,8 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 					cn.links.addElement(cnl);
 					ce.setNode(j, nodeList.size());
 					nodeList.addElement(cn);
+
+					// Otherwise, we broke out early
 				} else {
 					CircuitNodeLink cnl = new CircuitNodeLink();
 					cnl.num = j;
@@ -1240,6 +1268,8 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 						ce.setNodeVoltage(j, 0);
 				}
 			}
+
+			// what does this do??
 			for (j = 0; j != inodes; j++) {
 				CircuitNode cn = new CircuitNode();
 				cn.x = cn.y = -1;
@@ -1253,6 +1283,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 			}
 			vscount += ivs;
 		}
+
 		voltageSources = new CircuitElm[vscount];
 		vscount = 0;
 		circuitNonLinear = false;
@@ -1271,6 +1302,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		}
 		voltageSourceCount = vscount;
 
+		// Setup matrices
 		int matrixSize = nodeList.size() - 1 + vscount;
 		circuitMatrix = new double[matrixSize][matrixSize];
 		circuitRightSide = new double[matrixSize];
@@ -1280,6 +1312,8 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		circuitRowInfo = new RowInfo[matrixSize];
 		circuitPermute = new int[matrixSize];
 		int vs = 0;
+
+		// Create a new RowInfo object for each row of the matrix
 		for (i = 0; i != matrixSize; i++)
 			circuitRowInfo[i] = new RowInfo();
 		circuitNeedsMap = false;
@@ -1335,6 +1369,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		}
 		// System.out.println("ac5");
 
+		// Error scanning
 		for (i = 0; i != elmList.size(); i++) {
 			CircuitElm ce = getElm(i);
 			// look for inductors with no current path
@@ -1839,9 +1874,6 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 		return .1 * Math.exp((speedBar.getValue() - 61) / 24.);
 	}
 
-	boolean converged;
-	int subIterations;
-
 	void runCircuit() {
 		if (circuitMatrix == null || elmList.size() == 0) {
 			circuitMatrix = null;
@@ -1969,7 +2001,7 @@ public class CirSim extends Frame implements ComponentListener, ActionListener, 
 	}
 
 	void editFuncPoint(int x, int y) {
-		// XXX
+
 		cv.repaint(pause);
 	}
 
